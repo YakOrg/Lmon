@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/utsname.h>
+#include <sys/statvfs.h>
 
 #include "metrics.h"
 
@@ -56,3 +57,44 @@ int getMemAttr(char *attr) {
     fclose(stream);
     return -1;
 }
+
+char *kernelVersion() {
+    struct utsname buf;
+    int ret = uname(&buf);
+    char *version = malloc(strlen(buf.release));
+    strcat(version, buf.release);
+    return version;
+}
+
+int bytesToGb(unsigned long bytes) {
+    return bytes / 1024 / 1024 / 1024;
+}
+
+drive *getDrives() {
+    FILE *stream = fopen("/proc/mounts", "r");
+    if (stream == NULL) return NULL;
+    int lineReadSize = 50;
+    drive *array = malloc(lineReadSize * 128);
+    drive *iter = array;
+
+    char *line = malloc(lineReadSize);
+    while (fgets(line, lineReadSize, stream)) {
+        char *attrValue = malloc(lineReadSize);
+        char *mountPoint = malloc(128);
+        if (sscanf(line, "/dev/s%s %s", attrValue, mountPoint)) {
+            char *blockPath = malloc(10);
+            sprintf(blockPath, "/dev/s%s", attrValue);
+            iter->mountPoint = mountPoint;
+            iter->blockPath = blockPath;
+            struct statvfs vfs;
+            statvfs(mountPoint, &vfs);
+            iter->size = bytesToGb(vfs.f_bsize * vfs.f_blocks);
+            iter->usage = iter->size - bytesToGb(vfs.f_bsize * vfs.f_bfree);
+            iter++;
+        }
+    }
+    free(line);
+    fclose(stream);
+    return array;
+}
+

@@ -6,7 +6,18 @@
 #define LMON_METRICS_H
 
 char *getHostname();
+
+char *kernelVersion();
 double getCPULoadAvg();
 int getMemAttr(char *attr);
+
+typedef struct sDrive {
+    char *blockPath;
+    char *mountPoint;
+    int size;
+    int usage;
+} drive;
+
+drive *getDrives();
 
 #endif //LMON_METRICS_H
