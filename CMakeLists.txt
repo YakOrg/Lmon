@@ -3,4 +3,4 @@ project(lmon C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(lmon main.c http.c http.h metrics.c metrics.h templates.h)
+add_executable(lmon main.c agent/http/http.c agent/http/http.h agent/metrics/metrics.c agent/metrics/metrics.h agent/http/templates.h agent/agent.c agent/agent.h server/discovery.c server/discovery.h)

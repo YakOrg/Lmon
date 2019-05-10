@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "http.h"
-#include "metrics.h"
-#include "templates.h"
+#include "agent/http/http.h"
+#include "agent/metrics/metrics.h"
+#include "agent/http/templates.h"
 
 char *genPage() {
     char *json = malloc(sizeof(char) * 1500), baseBlock[600];
