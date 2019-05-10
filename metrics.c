@@ -7,8 +7,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/utsname.h>
 
 #include "metrics.h"
+
+char *getHostname() {
+    char *hostname = malloc(1024);
+    gethostname(hostname, 1024);
+    return hostname;
+}
 
 double getCPULoadAvg() {
     int FileHandler;
