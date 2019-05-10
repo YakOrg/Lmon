@@ -1,2 +1,2 @@
-# light-monitor
+# LMon
 
