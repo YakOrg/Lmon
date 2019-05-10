@@ -4,14 +4,13 @@
 
 #include "http.h"
 
-#include <netdb.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <err.h>
 #include <string.h>
 #include <malloc.h>
 
-void startServer(char *(*genPage)(), int port) {
+void startHttpServer(char *(*genPage)(), int port) {
     int one = 1, client_fd;
     struct sockaddr_in svr_addr, cli_addr;
     socklen_t sin_len = sizeof(cli_addr);
