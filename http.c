@@ -41,7 +41,7 @@ void startHttpServer(char *(*genPage)(), int port) {
 
         // Invoke function and generate response
         char *generated = genPage();
-        char *resp = malloc(8192);
+        char *resp = malloc(strlen(BASE_BODY) + strlen(generated));
         strcat(resp, BASE_BODY);
         strcat(resp, generated);
 
