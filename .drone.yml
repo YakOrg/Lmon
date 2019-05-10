@@ -1,0 +1,9 @@
+kind: pipeline
+name: default
+
+steps:
+  - name: build
+    image: rikorose/gcc-cmake:latest
+    commands:
+      - cmake -S .
+      - make
