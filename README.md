@@ -1,14 +1,13 @@
-# Lmon
+# Lmon 
 
-Lightweight Linux monitoring
+[![Build Status](https://drone.oceancraft.ru/api/badges/Yak/lmon/status.svg)](https://drone.oceancraft.ru/Yak/lmon)
 
 ## Getting Started
 
-You can receive node metrics by HTTP
+You can just receive node metrics by HTTP
 
 ### Build
-
-Just do this:
+Standart build with cmake and make
 
 ```
 cmake -S .
