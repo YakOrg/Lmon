@@ -29,6 +29,7 @@ void startHttpServer(char *(*genPage)(), int port) {
     }
 
     listen(sock, 5);
+    printf("HTTP server running on port: %d\n", port);
 
     for (;;) {
         client_fd = accept(sock, (struct sockaddr *) &cli_addr, &sin_len);

@@ -44,6 +44,12 @@ char *genPage() {
     return json;
 }
 
-int main() {
-    startHttpServer(genPage, 8080);
+int main(int argc, char **argv) {
+    int port = 8080;
+    if (argc > 1) {
+        char *endpoint;
+        int someArg = strtol(argv[1], &endpoint, 10);
+        port = someArg > 999 ? someArg : port;
+    }
+    startHttpServer(genPage, port);
 }
