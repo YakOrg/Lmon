@@ -7,8 +7,7 @@
 #include "templates.h"
 
 char *genPage() {
-    char *json = malloc(2048);
-    char *baseBlock = malloc(1024);
+    char *json = malloc(sizeof(char) * 1500), baseBlock[600];
     // Info
     char *hostname = getHostname();
     // CPU
@@ -30,16 +29,16 @@ char *genPage() {
 
     strcat(json, DRIVES_OBJ);
     strcat(json, arrayStart);
-    for (drive *d = getDrives(); d->blockPath != NULL; d++) {
-        char *drive = malloc(strlen(DRIVE_TEMPLATE) + 50);
-        sprintf(drive, DRIVE_TEMPLATE, d->blockPath, d->mountPoint, d->size, d->usage);
+    drive *iter = getDrives();
+    while (!iter->end) {
+        char drive[300];
+        sprintf(drive, DRIVE_TEMPLATE, iter->blockPath, iter->mountPoint, iter->size, iter->usage);
         strcat(json, drive);
-        free(drive);
-        if ((d + 1)->blockPath != NULL) strcat(json, delimiter);
+        if (!(++iter)->end) {
+            strcat(json, delimiter);
+        }
     }
     strcat(json, arrayEnd);
-
-
     strcat(json, objectEnd);
 
     return json;

@@ -40,17 +40,11 @@ void startHttpServer(char *(*genPage)(), int port) {
         if (error) continue;
 
         // Invoke function and generate response
-        char *generated = genPage();
-        char *resp = malloc(strlen(BASE_BODY) + strlen(generated));
-        strcat(resp, BASE_BODY);
-        strcat(resp, generated);
+        char resp[2048] = BASE_BODY;
+        strcat(resp, genPage());
 
         // Write response and close socket
         write(client_fd, resp, strlen(resp));
         close(client_fd);
-
-        // Clear memory
-        free(generated);
-        free(resp);
     }
 }

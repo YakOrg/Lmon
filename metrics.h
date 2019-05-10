@@ -12,10 +12,12 @@ double getCPULoadAvg();
 int getMemAttr(char *attr);
 
 typedef struct sDrive {
+
     char *blockPath;
     char *mountPoint;
     int size;
     int usage;
+    int end;
 } drive;
 
 drive *getDrives();
