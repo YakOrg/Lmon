@@ -6,7 +6,22 @@ Lightweight Linux monitoring
 
 You can receive node metrics by HTTP
 
-### Exapmle
+### Build
+
+Just do this:
+
+```
+cmake -S .
+make
+```
+
+### How it works
+
+Launch lmon:
+
+> lmon 8080
+
+Get data by http:
 
 > curl http://127.0.0.1:8080/
 
