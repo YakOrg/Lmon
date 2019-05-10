@@ -27,21 +27,19 @@ void startHttpServer(char *(*genPage)(), int port) {
         close(sock);
         err(1, "Can't bind");
     }
-
     listen(sock, 5);
-    printf("HTTP server running on port: %d\n", port);
 
+    printf("HTTP server running on port: %d\n", port);
     for (;;) {
         client_fd = accept(sock, (struct sockaddr *) &cli_addr, &sin_len);
 
-        // Read client headers
+        // Read client req data
+        // If we don't do this, we will get the error "connection reset by peer"
         char buf[HEADER_READ_SIZE];
-        int error = recv(client_fd, buf, HEADER_READ_SIZE, 0) < 0;
-        //free(buf);
-        if (error) continue;
+        if (recv(client_fd, buf, HEADER_READ_SIZE, 0) < 0) continue;
 
         // Invoke function and generate response
-        char resp[2048] = BASE_BODY;
+        char resp[4096] = BASE_BODY;
         strcat(resp, genPage());
 
         // Write response and close socket
