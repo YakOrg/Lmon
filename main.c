@@ -2,55 +2,37 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "agent/http/http.h"
-#include "agent/metrics/metrics.h"
-#include "agent/http/templates.h"
+#include "agent/agent.h"
+#include "server/discovery.h"
 
-char *genPage() {
-    char *json = malloc(sizeof(char) * 1500), baseBlock[600];
-    // Info
-    char *hostname = getHostname();
-    // CPU
-    double cpuLoadAvg = getCPULoadAvg();
-    // Memory
-    int memTotal = getMemAttr("MemTotal");
-    int memAvailable = getMemAttr("MemAvailable");
-    int memUsed = memTotal - memAvailable;
-    // Swap
-    int swapTotal = getMemAttr("SwapTotal");
-    int swapFree = getMemAttr("SwapFree");
-    int swapUsed = swapTotal - swapFree;
-
-    sprintf(baseBlock, BASE_TEMPLATE, hostname, getIP(), kernelVersion(), cpuLoadAvg, memTotal, memUsed, swapTotal,
-            swapUsed);
-
-    strcat(json, objectStart);
-    strcat(json, baseBlock);
-    strcat(json, delimiter);
-
-    strcat(json, DRIVES_OBJ);
-    strcat(json, arrayStart);
-    drive *iter = getDrives();
-    while (!iter->end) {
-        char drive[300];
-        sprintf(drive, DRIVE_TEMPLATE, iter->blockPath, iter->mountPoint, iter->size, iter->usage);
-        strcat(json, drive);
-        if (!(++iter)->end) {
-            strcat(json, delimiter);
-        }
-    }
-    strcat(json, arrayEnd);
-    strcat(json, objectEnd);
-
-    return json;
+void printUsage() {
+    printf(
+            "NAME:\n   lmon - monitoring, but small and simple\n\n"
+            "USAGE:\n   lmon [commands] [arguments...]\n\n"
+            "COMMANDS:\n   server   Run management server\n   agent    Run node agent\n\n'"
+            "ARGS:\n   --http-port <PORT> http server port\n"
+    );
 }
 
 int main(int argc, char **argv) {
-    int port = 8080;
-    if (argc > 1) {
-        char *endpoint;
-        int someArg = strtol(argv[1], &endpoint, 10);
-        port = someArg > 999 ? someArg : port;
+    if (argc == 1) {
+        printUsage();
+        return 0;
     }
-    startHttpServer(genPage, port);
+
+    int httpPort = 8080;
+    char *enptr;
+
+    for (int i = 0; i < argc; i++)
+        if (strcmp(argv[i], "--http-port") == 0 && i + 1 < argc)
+            httpPort = strtol(argv[i + 1], &enptr, 10);
+
+
+    if (strcmp(argv[1], "server") == 0)
+        startServer(httpPort);
+    else if (strcmp(argv[1], "agent") == 0)
+        startAgent(httpPort);
+    else printUsage();
+
+    return 0;
 }
