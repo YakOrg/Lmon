@@ -7,6 +7,7 @@
 
 char *getHostname();
 
+char *getIP();
 char *kernelVersion();
 double getCPULoadAvg();
 int getMemAttr(char *attr);

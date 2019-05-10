@@ -21,7 +21,8 @@ char *genPage() {
     int swapFree = getMemAttr("SwapFree");
     int swapUsed = swapTotal - swapFree;
 
-    sprintf(baseBlock, BASE_TEMPLATE, hostname, kernelVersion(), cpuLoadAvg, memTotal, memUsed, swapTotal, swapUsed);
+    sprintf(baseBlock, BASE_TEMPLATE, hostname, getIP(), kernelVersion(), cpuLoadAvg, memTotal, memUsed, swapTotal,
+            swapUsed);
 
     strcat(json, objectStart);
     strcat(json, baseBlock);

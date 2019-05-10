@@ -6,7 +6,7 @@
 #define LMON_TEMPLATES_H
 
 #define BASE_TEMPLATE\
- "\"info\": {\"hostname\": \"%s\", \"kernel\": \"%s\"}, "\
+ "\"info\": {\"hostname\": \"%s\", \"ip\": \"%s\", \"kernel\": \"%s\"}, "\
  "\"cpu\": {\"load_avg\": %.2f}, "\
  "\"memory\": {\"size\": %d, \"usage\": %d, \"swap\": {\"size\": %d, \"usage\": %d}}"
 

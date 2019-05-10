@@ -9,8 +9,25 @@
 #include <fcntl.h>
 #include <sys/utsname.h>
 #include <sys/statvfs.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+#include <sys/ioctl.h>
 
 #include "metrics.h"
+
+char *getIP() {
+    char *ip_address = malloc(sizeof(char) * 15);
+    int fd;
+    struct ifreq ifr;
+    fd = socket(AF_INET, SOCK_DGRAM, 0);
+    ifr.ifr_addr.sa_family = AF_INET;
+    memcpy(ifr.ifr_name, "enp8s0", IFNAMSIZ - 1);
+    ioctl(fd, SIOCGIFADDR, &ifr);
+    close(fd);
+    strcpy(ip_address, inet_ntoa(((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr));
+    return ip_address;
+}
 
 char *getHostname() {
     char *hostname = malloc(1024);
