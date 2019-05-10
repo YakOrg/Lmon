@@ -7,3 +7,12 @@ steps:
     commands:
       - cmake -S .
       - make
+  - name: gitea_release
+    image: plugins/gitea-release
+    settings:
+      api_key:
+        from_secret: api_key
+      base_url: https://gitea.oceancraft.ru
+      files: ./lmon
+    when:
+      event: tag

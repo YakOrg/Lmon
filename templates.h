@@ -14,7 +14,7 @@
 #define objectEnd "}"
 
 
-#define DRIVES_OBJ "\"drives\": "
+#define DRIVES_OBJ "\"storage\": "
 #define delimiter ", "
 #define arrayStart "["
 #define arrayEnd "]"
