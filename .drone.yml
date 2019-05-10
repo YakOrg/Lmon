@@ -7,7 +7,7 @@ steps:
     commands:
       - cmake -S .
       - make
-      - mv ./lmon ./lmon.bin
+      - tar -cvzf lmon.tar.gz ./lmon
   - name: gitea_release
     image: plugins/gitea-release
     settings:
@@ -15,6 +15,6 @@ steps:
         from_secret: api_key
       base_url: https://gitea.oceancraft.ru
       files:
-        - ./lmon.bin
+        - ./lmon.tar.gz
     when:
       event: tag
