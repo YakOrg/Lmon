@@ -16,9 +16,13 @@ make
 
 ### How it works
 
-Launch lmon:
+Launch agent:
 
-> lmon 8080
+> lmon agent
+
+Launch server:
+
+> lmon server
 
 Get data by http:
 
