@@ -29,14 +29,15 @@ Get data by http:
 {
   "info": {
     "hostname": "Dragon-PC",
+    "ip": "192.168.14.248",
     "kernel": "5.0.13-zen1-1-zen"
   },
   "cpu": {
-    "load_avg": 2.38
+    "load_avg": 2.07
   },
   "memory": {
     "size": 12217,
-    "usage": 6164,
+    "usage": 5839,
     "swap": {
       "size": 8388,
       "usage": 0
@@ -44,10 +45,10 @@ Get data by http:
   },
   "drives": [
     {
-      "partition": "/dev/sda5",
-      "mountPoint": "/",
+      "partition": "/dev/sda6",
+      "mountPoint": "/home",
       "size": 48,
-      "usage": 34
+      "usage": 35
     },
     {
       "partition": "/dev/sda6",
