@@ -41,8 +41,9 @@ void startHttpServer(char *(*genPage)(), int port) {
 
         // Invoke function and generate response
         char *generated = genPage();
-        char *resp = malloc(strlen(generated) + strlen(BASE_BODY));
-        sprintf(resp, "%s%s\n", BASE_BODY, generated);
+        char *resp = malloc(8192);
+        strcat(resp, BASE_BODY);
+        strcat(resp, generated);
 
         // Write response and close socket
         write(client_fd, resp, strlen(resp));
