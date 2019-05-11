@@ -9,8 +9,8 @@ void printUsage() {
     printf(
             "NAME:\n   lmon - monitoring, but small and simple\n\n"
             "USAGE:\n   lmon [commands] [arguments...]\n\n"
-            "COMMANDS:\n   server   Run management server\n   agent    Run node agent\n\n'"
-            "ARGS:\n   --http-port <PORT> http server port\n"
+            "COMMANDS:\n   server   Run management server\n   agent    Run node agent\n\n"
+            "ARGS:\n   --http-port <PORT> http server port\n   --help             show this help\n"
     );
 }
 
