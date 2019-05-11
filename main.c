@@ -1,38 +1,27 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "main.h"
 
-#include "agent/agent.h"
-#include "server/discovery.h"
+char* get_buf_for_json(json_t* json, size_t* size)
+{
+    *size = json_dumpb(json, NULL, 0, 0);
+    if (size == 0)
+        return -1;
 
-void printUsage() {
-    printf(
-            "NAME:\n   lmon - monitoring, but small and simple\n\n"
-            "USAGE:\n   lmon [commands] [arguments...]\n\n"
-            "COMMANDS:\n   server   Run management server\n   agent    Run node agent\n\n"
-            "ARGS:\n   --http-port <PORT> http server port\n   --help             show this help\n"
-    );
+    char *buf = malloc(*size);
+
+    return buf;
 }
 
-int main(int argc, char **argv) {
-    if (argc == 1) {
-        printUsage();
-        return 0;
-    }
+int main(void) {
+    metrics* m = malloc(sizeof(metrics));
+    get_general_info(m);
+    get_advanced_info(m);
+    json_t* json = make_json(m);
 
-    int httpPort = 8080;
-    char *enptr;
-
-    for (int i = 0; i < argc; i++)
-        if (strcmp(argv[i], "--http-port") == 0 && i + 1 < argc)
-            httpPort = strtol(argv[i + 1], &enptr, 10);
-
-
-    if (strcmp(argv[1], "server") == 0)
-        startServer(httpPort);
-    else if (strcmp(argv[1], "agent") == 0)
-        startAgent(httpPort);
-    else printUsage();
-
+    buf = get_buf_for_json(json, &size);
+    json_dumpb(json, buf, size, JSON_INDENT(JSON_MAX_INDENT));
+    /*now json variable contents the json of host*/
+    /*use it for debug
+     * json_dump_file(json, "path/to/file, flags");
+     * */
     return 0;
 }
