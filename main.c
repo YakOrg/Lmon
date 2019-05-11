@@ -3,7 +3,7 @@
 char* get_buf_for_json(json_t* json, size_t* size)
 {
     *size = json_dumpb(json, NULL, 0, 0);
-    if (size == 0)
+    if (*size == 0)
         return -1;
 
     char *buf = malloc(*size);
