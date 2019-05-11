@@ -5,6 +5,7 @@ steps:
   - name: build
     image: rikorose/gcc-cmake:latest
     commands:
+      - apt update -y && apt install -y libjansson-dev
       - cmake -S .
       - make
   - name: gitea_release
