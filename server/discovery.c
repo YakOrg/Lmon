@@ -16,7 +16,7 @@
 #include <pthread.h>
 
 pthread_t tid;
-
+agent *agents;
 
 void *sendBroadcast(void *arg) {
     int sock;                         /* Socket */
@@ -28,8 +28,8 @@ void *sendBroadcast(void *arg) {
     unsigned int sendStringLen;       /* Length of string to broadcast */
 
     broadcastIP = getIP();            /* First arg:  broadcast IP address */
-    broadcastPort = 1973;               /* Second arg:  broadcast port */
-    sendString = getIP();            /* Third arg:  string to broadcast */
+    broadcastPort = 1973;             /* Second arg:  broadcast port */
+    sendString = getIP();             /* Third arg:  string to broadcast */
 
     /* Create socket for sending/receiving datagrams */
     if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {
