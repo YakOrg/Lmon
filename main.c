@@ -1,15 +1,33 @@
 #include "main.h"
 
-int main(void) {
-    metrics* m = malloc(sizeof(metrics));
-    get_general_info(m);
-    get_advanced_info(m);
-    json_t* json = make_json(m);
+void printUsage() {
+    printf(
+            "NAME:\n   lmon - monitoring, but small and simple\n\n"
+            "USAGE:\n   lmon [commands] [arguments...]\n\n"
+            "COMMANDS:\n   server   Run management server\n   agent    Run node agent\n\n"
+            "ARGS:\n   --http-port <PORT> http server port\n   --help             show this help\n"
+    );
+}
 
-    /*use it for debug
-     * json_dump_file(json, "path/to/file, flags");
-     * */
-  	buf = json_dumps(json,0);
-  	/*now buf contains the json of host*/
+int main(int argc, char **argv) {
+    if (argc == 1) {
+        printUsage();
+        return 0;
+    }
+
+    int httpPort = 8080;
+    char *enptr;
+
+    for (int i = 0; i < argc; i++)
+        if (strcmp(argv[i], "--http-port") == 0 && i + 1 < argc)
+            httpPort = strtol(argv[i + 1], &enptr, 10);
+
+
+    if (strcmp(argv[1], "server") == 0)
+        startServer(httpPort);
+    else if (strcmp(argv[1], "agent") == 0)
+        startAgent(httpPort);
+    else printUsage();
+
     return 0;
 }

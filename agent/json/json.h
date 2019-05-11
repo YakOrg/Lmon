@@ -6,7 +6,7 @@
 #define UNTITLED2_JSON_H
 
 #include <jansson.h>
-#include "metrics.h"
+#include "../metrics/metrics.h"
 
 json_t* make_json(metrics* m);
 
