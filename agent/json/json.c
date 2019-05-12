@@ -10,7 +10,9 @@ json_t *make_json(metrics *m) {
     // Info block
     json_t *info_block = json_object();
 
+
     json_object_set(info_block, "hostname", json_string(m->hostname));
+    json_object_set(info_block, "ip_address", json_string(m->local_ip));
     json_object_set(info_block, "uptime", json_integer(m->uptime));
 
     json_t *info_sys_block = json_object();

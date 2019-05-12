@@ -16,7 +16,8 @@
 
 #include "metrics.h"
 
-ip_addr *getIP() {
+char *getIP() {
+    char *ip_address = malloc(sizeof(char) * 16);
     int fd;
     struct ifreq ifr;
     fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -24,10 +25,10 @@ ip_addr *getIP() {
     memcpy(ifr.ifr_name, "enp8s0", IFNAMSIZ - 1);
     ioctl(fd, SIOCGIFADDR, &ifr);
     close(fd);
-    ip_addr *address = malloc(sizeof(ip_addr));
-    address->sin_addr = ((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr;
-    return address;
+    strcpy(ip_address, inet_ntoa(((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr));
+    return ip_address;
 }
+
 
 double getCPULoadAvg() {
     int FileHandler;

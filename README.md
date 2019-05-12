@@ -32,6 +32,7 @@ Get data by http:
 {
   "info": {
     "hostname": "Dragon-PC",
+    "ip_address": "192.168.1.14",
     "uptime": 9352,
     "system": {
       "name": "Linux",

@@ -25,7 +25,7 @@ typedef struct metrics {
 
     /* Info block */
     char *hostname;            /* Hostname */
-    ip_addr *local_ip;         /* Local ip address */
+    char *local_ip;            /* Local ip address */
     char *sys_name;            /* Operating system name (e.g., "Linux") */
     char *sys_release;         /* Operating system sys_release (e.g., "2.6.28") */
     char *sys_version;         /* Operating system sys_version */
