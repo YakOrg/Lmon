@@ -2,18 +2,6 @@
 // Created by dragon on 10.05.19.
 //
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/utsname.h>
-#include <sys/statvfs.h>
-#include <netinet/in.h>
-#include <net/if.h>
-#include <arpa/inet.h>
-#include <sys/ioctl.h>
-
 #include "metrics.h"
 
 network_interface* get_interfaces(void){
