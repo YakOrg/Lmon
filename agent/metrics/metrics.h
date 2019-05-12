@@ -36,7 +36,7 @@ typedef struct network_interface{
      * C++ allow you use it without struct,
      * but we use Pure C, don`t we?
     */
-    network_interface   *next = NULL;
+    struct network_interface* next = NULL;
     /*TODO*/
   	net_address*    addresses;
 }network_interface;
