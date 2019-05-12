@@ -41,6 +41,7 @@ Get data by http:
     }
   },
   "cpu": {
+    "processors_count": 4,
     "load_avg": 2.26,
     "processes_count": 754
   },

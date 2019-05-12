@@ -33,6 +33,7 @@ typedef struct metrics {
     uint32_t uptime;           /* Seconds since boot */
 
     /* CPU block*/
+    int processors_count;      /* Count of processors available */
     double load_average;       /* System load average */
     uint32_t processes_count;  /* Number of current processes */
 

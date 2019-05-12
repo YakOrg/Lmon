@@ -25,6 +25,7 @@ json_t *make_json(metrics *m) {
 
     // CPU block
     json_t *cpu_block = json_object();
+    json_object_set(cpu_block, "processors_count", json_integer(m->processors_count));
     json_object_set(cpu_block, "load_avg", json_real(m->load_average));
     json_object_set(cpu_block, "processes_count", json_integer(m->processes_count));
     json_object_set(json, "cpu", cpu_block);

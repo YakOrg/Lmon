@@ -107,6 +107,7 @@ int get_advanced_metrics(metrics *m) {
 
     m->processes_count = sys->procs;
     m->load_average = getCPULoadAvg();
+    m->processors_count = get_nprocs();
 
     m->ram_size = bytesToMb(sys->totalram);
     m->ram_usage = bytesToMb(sys->totalram - sys->freeram);
