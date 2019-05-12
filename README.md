@@ -32,32 +32,40 @@ Get data by http:
 {
   "info": {
     "hostname": "Dragon-PC",
-    "ip": "192.168.14.248",
-    "kernel": "5.0.13-zen1-1-zen"
+    "uptime": 9352,
+    "system": {
+      "name": "Linux",
+      "release": "5.0.13-zen1-1-zen",
+      "version": "#1 ZEN SMP PREEMPT Sun May 5 18:05:42 UTC 2019",
+      "arch": "x86_64"
+    }
   },
   "cpu": {
-    "load_avg": 2.07
+    "load_avg": 2.26,
+    "processes_count": 754
   },
   "memory": {
-    "size": 12217,
-    "usage": 5839,
+    "size": 11931,
+    "usage": 6319,
+    "shared": 452,
+    "buffer": 234,
     "swap": {
-      "size": 8388,
+      "size": 8191,
       "usage": 0
     }
   },
   "drives": [
     {
-      "partition": "/dev/sda6",
-      "mountPoint": "/home",
+      "partition": "/dev/sda5",
+      "mount_point": "/",
       "size": 48,
       "usage": 35
     },
     {
       "partition": "/dev/sda6",
-      "mountPoint": "/home",
+      "mount_point": "/home",
       "size": 191,
-      "usage": 148
+      "usage": 147
     }
   ]
 }
