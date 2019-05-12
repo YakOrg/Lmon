@@ -16,19 +16,55 @@
 
 #include "metrics.h"
 
-char *getIP() {
-    char *ip_address = malloc(sizeof(char) * 16);
-    int fd;
-    struct ifreq ifr;
-    fd = socket(AF_INET, SOCK_DGRAM, 0);
-    ifr.ifr_addr.sa_family = AF_INET;
-    memcpy(ifr.ifr_name, "enp8s0", IFNAMSIZ - 1);
-    ioctl(fd, SIOCGIFADDR, &ifr);
-    close(fd);
-    strcpy(ip_address, inet_ntoa(((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr));
-    return ip_address;
-}
+network_interface* get_interfaces(void){
+    struct ifaddrs *ifaddr, *ifa;
+    struct sockaddr_in* addr;
+    char ipstr[INET6_ADDRSTRLEN];
+    /*contains pointer to first member of list*/
+    network_interface* interfaces = NULL;
+    network_interface* it         = NULL;
 
+    memset(ipstr, 0, sizeof(ipstr));
+
+    if(getifaddrs(&ifaddr)) {
+        perror("getifaddrs");
+        exit(EXIT_FAILURE);
+    }
+
+    for (ifa = ifaddr; ifa != NULL; ifa=ifa->ifa_next) {
+        /*In Pure C you can do it without cast, but I think you are betrayer and use c++ compiler */
+        if(it == NULL){
+            it = (network_interface*) malloc(sizeof(network_interface));
+            it->next = NULL;
+            interfaces = it;
+        }else {
+            it->next = (network_interface *) malloc(sizeof(network_interface));
+            it = it->next;
+            it->next = NULL;
+        }
+
+        addr = (struct sockaddr_in *) ifa->ifa_addr;
+        inet_ntop(addr->sin_family, &(addr->sin_addr), ipstr, INET6_ADDRSTRLEN);
+
+        if(ifa->ifa_addr->sa_family == AF_INET){
+            memcpy(it->ipv4_address, ipstr, INET_ADDRSTRLEN);
+            it->ipv6_address[0] = -1;
+        }else{
+            memcpy(it->ipv6_address, ipstr, INET6_ADDRSTRLEN);
+            it->ipv4_address[0] = -1;
+        }
+
+        it->interface_name = ifa->ifa_name;
+    }
+    /* for Turkish debug
+    for(it = interfaces;it != NULL; it = it->next) {
+        printf("interface: %s, ipv4-address: %s ipv6-address: %s\n", it->interface_name,
+               (it->ipv4_address[0] != -1) ? it->ipv4_address : "none",
+               (it->ipv6_address[0] != -1) ? it->ipv6_address : "none");
+    }
+     */
+    return interfaces;
+}
 
 double getCPULoadAvg() {
     int FileHandler;
