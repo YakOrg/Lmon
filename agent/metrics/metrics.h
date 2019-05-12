@@ -5,11 +5,23 @@
 #ifndef LMON_METRICS_H
 #define LMON_METRICS_H
 
+#include <ifaddrs.h>
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/utsname.h>
+#include <sys/statvfs.h>
+#include <netinet/in.h>
+#include <net/if.h>
+#include <arpa/inet.h>
+#include <sys/ioctl.h>
 #include <sys/sysinfo.h>
 #include <sys/utsname.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <malloc.h>
+#include <sys/types.h>
 
 typedef struct net_address {
     char    ipv4_address[INET_ADDRSTRLEN];
