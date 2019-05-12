@@ -11,6 +11,24 @@
 #include <stdint.h>
 #include <malloc.h>
 
+typedef struct net_address {
+    char    ipv4_address[INET_ADDRSTRLEN];
+    char    ipv6_address[INET6_ADDRSTRLEN];
+} net_address;
+
+typedef struct network_interface{
+    char*   interface_name;
+    char    ipv4_address[INET_ADDRSTRLEN];
+    char    ipv6_address[INET6_ADDRSTRLEN];
+    /*
+     * C++ allow you use it without struct,
+     * but we use Pure C, don`t we?
+    */
+    struct  network_interface   *next = NULL;
+    /*TODO*/
+  	net_address*    addresses;
+}network_interface;
+
 typedef struct drive {
     char *blockPath;
     char *mountPoint;
