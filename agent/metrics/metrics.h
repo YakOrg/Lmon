@@ -11,39 +11,7 @@
 #include <stdint.h>
 #include <malloc.h>
 
-typedef struct metrics {
-    /*general information*/
-    char *sysname;   /* Operating system name (e.g., "Linux") */
-    char *release;   /* Operating system release (e.g., "2.6.28")*/
-    char *version;   /* Operating system version */
-    char *machine;   /* Hardware identifier */
-
-    /*advanced information*/
-    uint32_t uptime;    /* Seconds since boot */
-    uint32_t average;   /* load averages */
-    uint64_t totalram;  /* Total usable main memory size */
-    uint64_t freeram;   /* Available memory size */
-    uint64_t sharedram; /* Available shared memory  */
-    uint64_t bufferram; /* Memory used by buffers */
-    uint64_t totalswap; /* Total swap space size */
-    uint64_t freeswap;  /* Swap space still available */
-    uint32_t procs;     /* Number of current processes */
-} metrics;
-
-int get_general_info(metrics *m);
-
-int get_advanced_info(metrics *m);
-
-
-char *getHostname();
-
-char *getIP();
-char *kernelVersion();
-double getCPULoadAvg();
-int getMemAttr(char *attr);
-
-typedef struct sDrive {
-
+typedef struct drive {
     char *blockPath;
     char *mountPoint;
     int size;
@@ -51,6 +19,38 @@ typedef struct sDrive {
     int end;
 } drive;
 
-drive *getDrives();
+typedef struct sockaddr_in ip_addr;
+
+typedef struct metrics {
+
+    /* Info block */
+    char *hostname;            /* Hostname */
+    ip_addr *local_ip;         /* Local ip address */
+    char *sys_name;            /* Operating system name (e.g., "Linux") */
+    char *sys_release;         /* Operating system sys_release (e.g., "2.6.28") */
+    char *sys_version;         /* Operating system sys_version */
+    char *arch;                /* Hardware identifier */
+    uint32_t uptime;           /* Seconds since boot */
+
+    /* CPU block*/
+    double load_average;       /* System load average */
+    uint32_t processes_count;  /* Number of current processes */
+
+    /* Memory block */
+    uint64_t ram_size;         /* Total usable main memory size */
+    uint64_t ram_usage;        /* Used memory size */
+    uint64_t ram_shared;       /* Available shared memory  */
+    uint64_t ram_buffer;       /* Memory used by buffers */
+    uint64_t swap_size;        /* Total swap space size */
+    uint64_t swap_usage;       /* Used swap space size */
+
+    /* Drives */
+    drive *drives;
+
+} metrics;
+
+int get_base_metrics(metrics *m);
+
+int get_advanced_metrics(metrics *m);
 
 #endif //LMON_METRICS_H

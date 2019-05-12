@@ -16,8 +16,7 @@
 
 #include "metrics.h"
 
-char *getIP() {
-    char *ip_address = malloc(sizeof(char) * 15);
+ip_addr *getIP() {
     int fd;
     struct ifreq ifr;
     fd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -25,14 +24,9 @@ char *getIP() {
     memcpy(ifr.ifr_name, "enp8s0", IFNAMSIZ - 1);
     ioctl(fd, SIOCGIFADDR, &ifr);
     close(fd);
-    strcpy(ip_address, inet_ntoa(((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr));
-    return ip_address;
-}
-
-char *getHostname() {
-    char *hostname = malloc(1024);
-    gethostname(hostname, 1024);
-    return hostname;
+    ip_addr *address = malloc(sizeof(ip_addr));
+    address->sin_addr = ((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr;
+    return address;
 }
 
 double getCPULoadAvg() {
@@ -50,38 +44,12 @@ double getCPULoadAvg() {
     return (double) load;
 }
 
-int getMemAttr(char *attr) {
-    char base[] = ": %d kB";
-    char pattern[strlen(base) + strlen(attr)];
-    strcpy(pattern, attr);
-    strcat(pattern, base);
-
-    FILE *stream = fopen("/proc/meminfo", "r");
-    if (stream == NULL) return -1;
-
-    char line[512];
-    while (fgets(line, 50, stream)) {
-        int attrValue;
-        if (sscanf(line, pattern, &attrValue)) {
-            fclose(stream);
-            // Convert kb to mb
-            return attrValue / 1000;
-        }
-    }
-    fclose(stream);
-    return -1;
-}
-
-char *kernelVersion() {
-    struct utsname buf;
-    int ret = uname(&buf);
-    char *version = malloc(strlen(buf.release));
-    strcat(version, buf.release);
-    return version;
+int bytesToMb(unsigned long bytes) {
+    return bytes / 1024 / 1024;
 }
 
 int bytesToGb(unsigned long bytes) {
-    return bytes / 1024 / 1024 / 1024;
+    return bytesToMb(bytes) / 1024;
 }
 
 drive *getDrives() {
@@ -93,16 +61,18 @@ drive *getDrives() {
 
     char line[lineReadSize],
             attrValue[lineReadSize],
-            mountPoint[lineReadSize],
-            blockPathTmp[lineReadSize];
+            mountPointTmp[lineReadSize];
 
     FILE *stream = fopen("/proc/mounts", "r");
     if (stream == NULL) return NULL;
 
     while (fgets(line, lineReadSize, stream))
-        if (sscanf(line, "/dev/s%s %s", attrValue, mountPoint)) {
+        if (sscanf(line, "/dev/s%s %s", attrValue, mountPointTmp)) {
+            char *blockPathTmp = malloc(sizeof(char) * lineReadSize);
+            char *mountPoint = malloc(sizeof(char) * lineReadSize);
+            memcpy(mountPoint, mountPointTmp, strlen(mountPointTmp) * sizeof(char));
             sprintf(blockPathTmp, "/dev/s%s", attrValue);
-            statvfs(mountPoint, &vfs);
+            statvfs(mountPointTmp, &vfs);
             iter->end = 0;
             iter->mountPoint = mountPoint;
             iter->blockPath = blockPathTmp;
@@ -115,33 +85,38 @@ drive *getDrives() {
     return array;
 }
 
-int get_general_info(metrics *m) {
+int get_base_metrics(metrics *m) {
     struct utsname *uts = malloc(sizeof(struct utsname));
     int res = uname(uts);
 
-    m->sysname = uts->sysname;
-    m->release = uts->release;
-    m->version = uts->version;
-    m->machine = uts->machine;
+    m->hostname = uts->nodename;
+    m->sys_name = uts->sysname;
+    m->sys_release = uts->release;
+    m->sys_version = uts->version;
+    m->arch = uts->machine;
 
     return res;
 }
 
-int get_advanced_info(metrics *m) {
+int get_advanced_metrics(metrics *m) {
     struct sysinfo *sys = malloc(sizeof(struct sysinfo));
     int res = sysinfo(sys);
 
-    /*m->load = sys->loads can`t do that! Because in C cannot to assign arrays */
+    m->local_ip = getIP();
     m->uptime = sys->uptime;
-    m->procs = sys->procs;
-    m->average = sys->loads[0];
-    m->totalram = sys->totalram;
-    m->freeram = sys->freeram;
-    m->freeswap = sys->freeswap;
-    m->sharedram = sys->sharedram;
-    m->bufferram = sys->bufferram;
-    m->totalswap = sys->totalswap;
 
+    m->processes_count = sys->procs;
+    m->load_average = getCPULoadAvg();
+
+    m->ram_size = bytesToMb(sys->totalram);
+    m->ram_usage = bytesToMb(sys->totalram - sys->freeram);
+    m->ram_shared = bytesToMb(sys->sharedram);
+    m->ram_buffer = bytesToMb(sys->bufferram);
+
+    m->swap_size = bytesToMb(sys->totalswap);
+    m->swap_usage = bytesToMb(sys->totalswap - sys->freeswap);
+
+    m->drives = getDrives();
 
     return res;
 }
