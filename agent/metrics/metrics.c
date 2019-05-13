@@ -4,7 +4,54 @@
 
 #include "metrics.h"
 
-network_interface* get_interfaces(void){
+#define SET_ZERO(a, size) memset(a, 0, size)
+
+typedef enum ip_type{
+    IPV4,   /*0*/
+    IPV6    /*1*/
+}ip_type;
+
+typedef struct net_address {
+    /*char    ipv4_address[INET_ADDRSTRLEN];
+    char    ipv6_address[INET6_ADDRSTRLEN];*/
+    struct  net_address*    next;
+    char*   ip_address;
+    ip_type type;
+} net_address;
+
+typedef struct network_interface{
+    char*   interface_name;
+    char    ipv4_address[INET_ADDRSTRLEN];
+    char    ipv6_address[INET6_ADDRSTRLEN];
+    struct  network_interface *next;
+    net_address*    addresses;
+}network_interface;
+
+/*
+ * find structure by name in structures list
+ * returns structure in success
+ * NULL if no match found
+*/
+network_interface* find_struct_by_name(network_interface* begin, char* name)
+{
+    for(;begin != NULL; begin = begin->next){
+        if(strcmp(begin->interface_name, name) == 0)
+            return begin;
+        else
+            return NULL;
+    }
+}
+
+void add_new_address(void){
+    net_address* it;
+    net_address* begin;
+    for(it = begin; it->next != NULL; it = it->next);
+    it->next =(net_address*) malloc(sizeof(net_address));
+    it->next->ip_address = "/*TODO*/";
+}
+
+network_interface* get_interfaces(void)
+{
     struct ifaddrs *ifaddr, *ifa;
     struct sockaddr_in* addr;
     char ipstr[INET6_ADDRSTRLEN];
@@ -12,7 +59,8 @@ network_interface* get_interfaces(void){
     network_interface* interfaces = NULL;
     network_interface* it         = NULL;
 
-    memset(ipstr, 0, sizeof(ipstr));
+    /*memset(ipstr, 0, sizeof(ipstr));*/
+    SET_ZERO(ipstr, sizeof(ipstr));
 
     if(getifaddrs(&ifaddr)) {
         perror("getifaddrs");
@@ -20,15 +68,21 @@ network_interface* get_interfaces(void){
     }
 
     for (ifa = ifaddr; ifa != NULL; ifa=ifa->ifa_next) {
-        /*In Pure C you can do it without cast, but I think you are betrayer and use c++ compiler */
         if(it == NULL){
             it = (network_interface*) malloc(sizeof(network_interface));
             it->next = NULL;
             interfaces = it;
+            it->interface_name = ifa->ifa_name;
         }else {
-            it->next = (network_interface *) malloc(sizeof(network_interface));
-            it = it->next;
-            it->next = NULL;
+            network_interface* tmp = find_struct_by_name(it, ifa->ifa_name);
+            if(tmp == NULL) {
+                it->next = (network_interface *) malloc(sizeof(network_interface));
+                it = it->next;
+                it->next = NULL;
+                it->interface_name = ifa->ifa_name;
+            }else{
+                add_new_address();
+            }
         }
 
         addr = (struct sockaddr_in *) ifa->ifa_addr;
@@ -41,16 +95,8 @@ network_interface* get_interfaces(void){
             memcpy(it->ipv6_address, ipstr, INET6_ADDRSTRLEN);
             it->ipv4_address[0] = -1;
         }
+    }
 
-        it->interface_name = ifa->ifa_name;
-    }
-    /* for Turkish debug
-    for(it = interfaces;it != NULL; it = it->next) {
-        printf("interface: %s, ipv4-address: %s ipv6-address: %s\n", it->interface_name,
-               (it->ipv4_address[0] != -1) ? it->ipv4_address : "none",
-               (it->ipv6_address[0] != -1) ? it->ipv6_address : "none");
-    }
-     */
     return interfaces;
 }
 
