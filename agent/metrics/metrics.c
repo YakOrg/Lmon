@@ -8,7 +8,7 @@ network_interface* get_interfaces(void){
     struct ifaddrs *ifaddr, *ifa;
     struct sockaddr_in* addr;
     char ipstr[INET6_ADDRSTRLEN];
-    /*contains pointer to first member of list*/
+    
     network_interface* interfaces = NULL;
     network_interface* it         = NULL;
 
@@ -20,7 +20,6 @@ network_interface* get_interfaces(void){
     }
 
     for (ifa = ifaddr; ifa != NULL; ifa=ifa->ifa_next) {
-        /*In Pure C you can do it without cast, but I think you are betrayer and use c++ compiler */
         if(it == NULL){
             it = (network_interface*) malloc(sizeof(network_interface));
             it->next = NULL;
@@ -44,13 +43,7 @@ network_interface* get_interfaces(void){
 
         it->interface_name = ifa->ifa_name;
     }
-    /* for Turkish debug
-    for(it = interfaces;it != NULL; it = it->next) {
-        printf("interface: %s, ipv4-address: %s ipv6-address: %s\n", it->interface_name,
-               (it->ipv4_address[0] != -1) ? it->ipv4_address : "none",
-               (it->ipv6_address[0] != -1) ? it->ipv6_address : "none");
-    }
-     */
+    
     return interfaces;
 }
 
