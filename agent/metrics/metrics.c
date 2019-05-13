@@ -2,6 +2,8 @@
 // Created by dragon on 10.05.19.
 //
 
+/*Please! Before makeing changes consult with Garin! (very cool guy, in my opinion)*/
+
 #include "metrics.h"
 
 #define SET_ZERO(a, size) memset(a, 0, size)
