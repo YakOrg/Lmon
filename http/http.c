@@ -4,46 +4,39 @@
 
 #include "http.h"
 
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <err.h>
-#include <string.h>
-#include <malloc.h>
+static int begin_request_handler(struct lh_ctx_t *ctx, struct lh_con_t *conn) {
+    const struct lh_rqi_t *request_info = httplib_get_request_info(conn);
+    char content[100];
+
+    // Prepare the message we're going to send
+    int content_length = snprintf(content, sizeof(content),
+                                  "Hello from libhttp! Remote port: %d",
+                                  request_info->remote_port);
+
+    // Send HTTP reply to the client
+    httplib_printf(ctx, conn, "HTTP/1.1 200 OK\r\n"
+                              "Content-Type: text/plain\r\n"
+                              "Content-Length: %d\r\n"        // Always set Content-Length
+                              "\r\n"
+                              "%s", content_length, content);
+
+    return 1;
+}
 
 void startHttpServer(char *(*genPage)(), int port) {
-    int one = 1, client_fd;
-    struct sockaddr_in svr_addr, cli_addr;
-    socklen_t sin_len = sizeof(cli_addr);
+    struct lh_ctx_t *ctx;
+    struct lh_clb_t callbacks;
 
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock < 0) err(1, "can't open socket");
-    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
+    // List of options. Last element must be NULL.
+    struct lh_opt_t opt;
+    opt.name = "listening_ports";
+    opt.value = "8080";
 
-    svr_addr.sin_family = AF_INET;
-    svr_addr.sin_addr.s_addr = INADDR_ANY;
-    svr_addr.sin_port = htons(port);
+    // Prepare callbacks structure. We have only one callback, the rest are NULL.
+    memset(&callbacks, 0, sizeof(callbacks));
+    callbacks.begin_request = begin_request_handler;
 
-    if (bind(sock, (struct sockaddr *) &svr_addr, sizeof(svr_addr)) == -1) {
-        close(sock);
-        err(1, "Can't bind");
-    }
-    listen(sock, 5);
-
-    printf("HTTP server running on port: %d\n", port);
-    for (;;) {
-        client_fd = accept(sock, (struct sockaddr *) &cli_addr, &sin_len);
-
-        // Read client req data
-        // If we don't do this, we will get the error "connection reset by peer"
-        char buf[HEADER_READ_SIZE];
-        if (recv(client_fd, buf, HEADER_READ_SIZE, 0) < 0) continue;
-
-        // Invoke function and generate response
-        char resp[4096] = BASE_BODY;
-        strcat(resp, genPage());
-
-        // Write response and close socket
-        write(client_fd, resp, strlen(resp));
-        close(client_fd);
-    }
+    // Start the web server.
+    ctx = httplib_start(&callbacks, NULL, &opt);
+    getchar();
 }
