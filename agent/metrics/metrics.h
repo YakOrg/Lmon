@@ -74,6 +74,9 @@ typedef struct metrics {
     uint64_t swap_size;        /* Total swap space size */
     uint64_t swap_usage;       /* Used swap space size */
 
+    /* Network interfaces */
+    network_interface *network_interfaces;
+
     /* Drives */
     drive *drives;
 
