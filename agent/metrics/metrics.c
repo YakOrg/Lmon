@@ -4,79 +4,110 @@
 
 #include "metrics.h"
 
-#define SET_ZERO(a, size) memset(a, 0, size)
-
 /*
  * find structure by name in structures list
  * returns structure in success
  * NULL if no match found
 */
-network_interface *find_struct_by_name(network_interface *begin, char *name) {
-        for(;begin != NULL; begin = begin->next){
-            if(strcmp(begin->interface_name, name) == 0)
-                return begin;
-            else
-                return NULL;
-        }
+network_interface* find_struct_by_name(network_interface* begin, char* name)
+{
+    for(;begin != NULL; begin = begin->next){
+        if(strcmp(begin->interface_name, name) == 0)
+            return begin;
+    }
+
+    return NULL;
 }
 
 /*create and return first element of list of interfaces*/
-network_interface *create_int_list(char *name) {
-        network_interface* t = (network_interface*) malloc(sizeof(network_interface));
-        t->next           = NULL;
-        t->addresses      = NULL;
-        t->interface_name = name;
+network_interface* create_int_list(char* name)
+{
+    network_interface* t = (network_interface*) malloc(sizeof(network_interface));
+    t->next           = NULL;
+    t->addresses      = NULL;
+    t->interface_name = name;
 
-        return t;
+    return t;
 }
 
-void add_new_addr(network_interface *t, struct sockaddr *a) {
-    char* ipstr;
+void add_new_addr(network_interface* t, struct sockaddr* a)
+{
+    char *ipstr;
 
     net_address* it          = t->addresses;
     struct sockaddr_in* addr = (struct sockaddr_in*) a;
+
+    if(it == NULL){
+        it       = (net_address*) malloc(sizeof(net_address));
+        it->next = NULL;
+        t->addresses = it;
+        goto fill_the_gaps;
+    }
 
     /*find last record*/
     for(;it->next != NULL; it = it->next);
     it->next = (net_address*) malloc(sizeof(net_address));
     it = it->next;
+    it->next = NULL;
 
+    fill_the_gaps:
     switch(addr->sin_family){
         case AF_INET:
-            ipstr = (char*) calloc(INET_ADDRSTRLEN+1, 1);
+            ipstr    = (char*) malloc(INET_ADDRSTRLEN);
+            //SET_ZERO(ipstr, INET_ADDRSTRLEN+1);
+            it->type = AF_INET;
             break;
         case AF_INET6:
-            ipstr = (char*) calloc(INET6_ADDRSTRLEN+1, 1);
+            ipstr = (char*) malloc(INET6_ADDRSTRLEN);
+            //SET_ZERO(ipstr, INET6_ADDRSTRLEN+1);
+            it->type = AF_INET6;
             break;
+        default:
+            //ipstr = (char*) malloc(INET6_ADDRSTRLEN);
+            it->type = 17;
+            //SET_ZERO(ipstr, INET6_ADDRSTRLEN+1);
+            //ipstr = (char*)inet_ntop(addr->sin_family, &(addr->sin_addr), ipstr, strlen(ipstr));
+            //if(ipstr == NULL)
+                //perror("INET_NTOP");
+            it->ip_address = "0";
+            return;
     }
 
-    inet_ntop(addr->sin_family, &(addr->sin_addr), ipstr, strlen(ipstr));
+    ipstr = (char*)inet_ntop(addr->sin_family, &(addr->sin_addr), ipstr, INET6_ADDRSTRLEN);
+    if(ipstr == NULL)
+        perror("INET_NTOP");
 
     it->ip_address = ipstr;
 
 }
 
-void add_new_int(network_interface *in, char *name) {
-    network_interface* t = (network_interface*) malloc(sizeof(network_interface));
+network_interface* add_new_int(network_interface* in, char* name)
+{
+    network_interface* t = in;
+
+    for(;t->next != NULL; t = t->next);
+    t->next = (network_interface*) malloc(sizeof(network_interface));
+    t       = t->next;
 
     t->interface_name = name;
     t->addresses      = NULL;
     t->next           = NULL;
 
-    in->next          = t;
+    return t;
 }
 
-network_interface *get_interfaces(void) {
+network_interface* get_interfaces(void)
+{
     struct ifaddrs *ifaddr, *ifa;
     struct sockaddr_in* addr;
-    char ipstr[INET6_ADDRSTRLEN];
-    
+    //char ipstr[INET6_ADDRSTRLEN];
+    /*contains pointer to first member of list*/
     network_interface* interfaces = NULL;
     /*iterator*/
     network_interface* it         = NULL;
 
     /*memset(ipstr, 0, sizeof(ipstr));*/
-    SET_ZERO(ipstr, sizeof(ipstr));
+    //SET_ZERO(ipstr, sizeof(ipstr));
 
     if(getifaddrs(&ifaddr)) {
         perror("getifaddrs");
@@ -90,15 +121,19 @@ network_interface *get_interfaces(void) {
             /*create first element*/
             interfaces = create_int_list(ifa->ifa_name);
             /*assign him address*/
-            /*add_new_addr();*/
-            /*TODO*/
+            add_new_addr(interfaces, ifa->ifa_addr);
+            it = interfaces;
         }else{
-            /*add_new_int();
-            add_new_addr();*/
-            /*TODO*/
+            network_interface *t = find_struct_by_name(interfaces, ifa->ifa_name);
+            if(t != NULL){
+                add_new_addr(t, ifa->ifa_addr);
+            }else{
+                add_new_addr(add_new_int(interfaces, ifa->ifa_name), ifa->ifa_addr);
+            }
         }
 
     }
+
     return interfaces;
 }
 
