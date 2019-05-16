@@ -23,22 +23,21 @@
 #include <malloc.h>
 #include <sys/types.h>
 
+typedef enum ip_type {
+    IPV4,   /*0*/
+    IPV6    /*1*/
+} ip_type;
+
 typedef struct net_address {
-    char    ipv4_address[INET_ADDRSTRLEN];
-    char    ipv6_address[INET6_ADDRSTRLEN];
+    struct net_address *next;
+    char *ip_address;
+    ip_type type;
 } net_address;
 
 typedef struct network_interface{
     char*   interface_name;
-    char    ipv4_address[INET_ADDRSTRLEN];
-    char    ipv6_address[INET6_ADDRSTRLEN];
-    /*
-     * C++ allow you use it without struct,
-     * but we use Pure C, don`t we?
-    */
-    struct network_interface* next;
-    /*TODO*/
-  	net_address*    addresses;
+    struct network_interface *next;
+    net_address *addresses;
 }network_interface;
 
 typedef struct drive {

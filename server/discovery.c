@@ -27,9 +27,9 @@ void *sendBroadcast(void *arg) {
     int broadcastPermission;          /* Socket opt to set permission to broadcast */
     unsigned int sendStringLen;       /* Length of string to broadcast */
 
-    broadcastIP = getIP();            /* First arg:  broadcast IP address */
+    broadcastIP = "";                 /* First arg:  broadcast IP address */
     broadcastPort = 1973;             /* Second arg:  broadcast port */
-    sendString = getIP();             /* Third arg:  string to broadcast */
+    sendString = "";                  /* Third arg:  string to broadcast */
 
     /* Create socket for sending/receiving datagrams */
     if ((sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0) {

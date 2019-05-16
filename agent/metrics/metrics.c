@@ -6,41 +6,22 @@
 
 #define SET_ZERO(a, size) memset(a, 0, size)
 
-    typedef enum ip_type{
-        IPV4,   /*0*/
-        IPV6    /*1*/
-    }ip_type;
-
-    typedef struct net_address {
-        struct  net_address*    next;
-        char*   ip_address;
-        ip_type type;
-    } net_address;
-
-    typedef struct network_interface{
-        char*   interface_name;
-        struct  network_interface *next;
-        net_address*    addresses;
-    }network_interface;
-
 /*
  * find structure by name in structures list
  * returns structure in success
  * NULL if no match found
 */
-    network_interface* find_struct_by_name(network_interface* begin, char* name)
-    {
+network_interface *find_struct_by_name(network_interface *begin, char *name) {
         for(;begin != NULL; begin = begin->next){
             if(strcmp(begin->interface_name, name) == 0)
                 return begin;
             else
                 return NULL;
         }
-    }
+}
 
 /*create and return first element of list of interfaces*/
-    network_interface* create_int_list(char* name)
-    {
+network_interface *create_int_list(char *name) {
         network_interface* t = (network_interface*) malloc(sizeof(network_interface));
         t->next           = NULL;
         t->addresses      = NULL;
@@ -49,8 +30,7 @@
         return t;
 }
 
-void add_new_addr(network_interface* t, struct sockaddr* a)
-{
+void add_new_addr(network_interface *t, struct sockaddr *a) {
     char* ipstr;
 
     net_address* it          = t->addresses;
@@ -76,8 +56,7 @@ void add_new_addr(network_interface* t, struct sockaddr* a)
 
 }
 
-void add_new_int(network_interface* in, char* name)
-{
+void add_new_int(network_interface *in, char *name) {
     network_interface* t = (network_interface*) malloc(sizeof(network_interface));
 
     t->interface_name = name;
@@ -87,8 +66,7 @@ void add_new_int(network_interface* in, char* name)
     in->next          = t;
 }
 
-network_interface* get_interfaces(void)
-{
+network_interface *get_interfaces(void) {
     struct ifaddrs *ifaddr, *ifa;
     struct sockaddr_in* addr;
     char ipstr[INET6_ADDRSTRLEN];
@@ -197,7 +175,9 @@ int get_advanced_metrics(metrics *m) {
     struct sysinfo *sys = malloc(sizeof(struct sysinfo));
     int res = sysinfo(sys);
 
-    m->local_ip = getIP();
+    // TODO: Change to interfaces
+    m->local_ip = "";
+
     m->uptime = sys->uptime;
 
     m->processes_count = sys->procs;

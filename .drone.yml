@@ -3,9 +3,8 @@ name: default
 
 steps:
   - name: build
-    image: rikorose/gcc-cmake:latest
+    image: registry.oceancraft.ru/lmon-build-env
     commands:
-      - apt update -y && apt install -y libjansson-dev
       - cmake -S .
       - make
   - name: gitea_release
@@ -18,3 +17,6 @@ steps:
         - ./lmon
     when:
       event: tag
+
+image_pull_secrets:
+  - registry
