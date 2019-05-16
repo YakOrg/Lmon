@@ -23,23 +23,19 @@
 #include <malloc.h>
 #include <sys/types.h>
 
-typedef enum ip_type {
-    IPV4,   /*0*/
-    IPV6    /*1*/
-} ip_type;
+#define SET_ZERO(a, size) memset(a, 0, size)
 
 typedef struct net_address {
-    struct net_address *next;
-    char *ip_address;
-    ip_type type;
+    struct  net_address*    next;
+    char*   ip_address;
+    int     type;
 } net_address;
 
 typedef struct network_interface{
     char*   interface_name;
-    struct network_interface *next;
-    net_address *addresses;
+    struct  network_interface *next;
+    net_address*    addresses;
 }network_interface;
-
 typedef struct drive {
     char *blockPath;
     char *mountPoint;
