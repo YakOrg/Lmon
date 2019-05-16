@@ -6,6 +6,6 @@ find_path(LIBHTTP_INCLUDE_DIR libhttp.h
         PATHS ${FIND_LIBHTTP_PATHS})
 
 find_library(LIBHTTP_LIBRARY
-        NAMES libhttp.a
+        NAMES libhttp
         PATH_SUFFIXES lib
         PATHS ${FIND_LIBHTTP_PATHS})
