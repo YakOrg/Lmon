@@ -54,21 +54,14 @@ void add_new_addr(network_interface* t, struct sockaddr* a)
     switch(addr->sin_family){
         case AF_INET:
             ipstr    = (char*) malloc(INET_ADDRSTRLEN);
-            //SET_ZERO(ipstr, INET_ADDRSTRLEN+1);
-            it->type = AF_INET;
+            it->type = IPV4;
             break;
         case AF_INET6:
             ipstr = (char*) malloc(INET6_ADDRSTRLEN);
-            //SET_ZERO(ipstr, INET6_ADDRSTRLEN+1);
-            it->type = AF_INET6;
+            it->type = IPV6;
             break;
         default:
-            //ipstr = (char*) malloc(INET6_ADDRSTRLEN);
-            it->type = 17;
-            //SET_ZERO(ipstr, INET6_ADDRSTRLEN+1);
-            //ipstr = (char*)inet_ntop(addr->sin_family, &(addr->sin_addr), ipstr, strlen(ipstr));
-            //if(ipstr == NULL)
-                //perror("INET_NTOP");
+            it->type = PACKET;
             it->ip_address = "0";
             return;
     }
