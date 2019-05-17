@@ -25,10 +25,16 @@
 
 #define SET_ZERO(a, size) memset(a, 0, size)
 
+typedef enum types{
+    IPV4,  /*0*/
+    IPV6,  /*1*/
+    PACKET /*2*/
+}types;
+
 typedef struct net_address {
     struct  net_address*    next;
     char*   ip_address;
-    int     type;
+    types   type;
 } net_address;
 
 typedef struct network_interface{
@@ -77,6 +83,22 @@ typedef struct metrics {
     drive *drives;
 
 } metrics;
+
+/*
+ * find structure by name in structures list
+ * returns structure in success
+ * NULL if no match found
+*/
+network_interface* find_struct_by_name(network_interface* begin, char* name);
+
+/*create and return first element of list of interfaces*/
+network_interface* create_int_list(char* name);
+  
+network_interface* add_new_int(network_interface* in, char* name)
+
+network_interface* get_interfaces(void)
+  
+void add_new_addr(network_interface* t, struct sockaddr* a)
 
 int get_base_metrics(metrics *m);
 
