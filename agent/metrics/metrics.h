@@ -94,11 +94,11 @@ network_interface* find_struct_by_name(network_interface* begin, char* name);
 /*create and return first element of list of interfaces*/
 network_interface* create_int_list(char* name);
   
-network_interface* add_new_int(network_interface* in, char* name)
+network_interface* add_new_int(network_interface* in, char* name);
 
-network_interface* get_interfaces(void)
+network_interface* get_interfaces(void);
   
-void add_new_addr(network_interface* t, struct sockaddr* a)
+void add_new_addr(network_interface* t, struct sockaddr* a);
 
 int get_base_metrics(metrics *m);
 
