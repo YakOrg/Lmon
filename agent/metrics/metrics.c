@@ -92,15 +92,11 @@ network_interface* add_new_int(network_interface* in, char* name)
 network_interface* get_interfaces(void)
 {
     struct ifaddrs *ifaddr, *ifa;
-    struct sockaddr_in* addr;
-    //char ipstr[INET6_ADDRSTRLEN];
+  
     /*contains pointer to first member of list*/
     network_interface* interfaces = NULL;
     /*iterator*/
     network_interface* it         = NULL;
-
-    /*memset(ipstr, 0, sizeof(ipstr));*/
-    //SET_ZERO(ipstr, sizeof(ipstr));
 
     if(getifaddrs(&ifaddr)) {
         perror("getifaddrs");
