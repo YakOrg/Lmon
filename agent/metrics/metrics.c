@@ -171,6 +171,7 @@ drive *getDrives() {
         if (sscanf(line, "/dev/s%s %s", attrValue, mountPointTmp)) {
             char *blockPathTmp = malloc(sizeof(char) * lineReadSize);
             char *mountPoint = malloc(sizeof(char) * lineReadSize);
+            memset(mountPoint, 0, sizeof(char) * lineReadSize);
             memcpy(mountPoint, mountPointTmp, strlen(mountPointTmp) * sizeof(char));
             sprintf(blockPathTmp, "/dev/s%s", attrValue);
             statvfs(mountPointTmp, &vfs);
@@ -203,9 +204,7 @@ int get_advanced_metrics(metrics *m) {
     struct sysinfo *sys = malloc(sizeof(struct sysinfo));
     int res = sysinfo(sys);
 
-    // TODO: Change to interfaces
-    m->local_ip = "";
-
+    m->network_interfaces = get_interfaces();
     m->uptime = sys->uptime;
 
     m->processes_count = sys->procs;

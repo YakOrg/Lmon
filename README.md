@@ -7,7 +7,7 @@
 You can just receive node metrics by HTTP
 
 ### Build
-Standart build with cmake and make
+Standard build with cmake and make
 
 ```
 cmake -S .
@@ -32,7 +32,6 @@ Get data by http:
 {
   "info": {
     "hostname": "Dragon-PC",
-    "ip_address": "192.168.1.14",
     "uptime": 9352,
     "system": {
       "name": "Linux",
@@ -56,6 +55,41 @@ Get data by http:
       "usage": 0
     }
   },
+  "interfaces": [
+    {
+      "name": "lo",
+      "addresses": {
+        "ipv4": [
+          "127.0.0.1"
+        ],
+        "ipv6": [
+          "::"
+        ]
+      }
+    },
+    {
+      "name": "enp8s0",
+      "addresses": {
+        "ipv4": [
+          "192.168.14.248"
+        ],
+        "ipv6": [
+          "0:0:fe80::56be:f7ff"
+        ]
+      }
+    },
+    {
+      "name": "wlp7s0",
+      "addresses": {
+        "ipv4": [
+          "10.0.0.100"
+        ],
+        "ipv6": [
+          "0:0:fe80::8a00:a566"
+        ]
+      }
+    }
+  ],
   "drives": [
     {
       "partition": "/dev/sda5",
