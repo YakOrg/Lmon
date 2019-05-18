@@ -12,7 +12,6 @@ json_t *make_json(metrics *m) {
 
 
     json_object_set(info_block, "hostname", json_string(m->hostname));
-    json_object_set(info_block, "ip_address", json_string(m->local_ip));
     json_object_set(info_block, "uptime", json_integer(m->uptime));
 
     json_t *info_sys_block = json_object();
@@ -46,6 +45,29 @@ json_t *make_json(metrics *m) {
     json_object_set(memory_block, "swap", memory_swap_block);
 
     json_object_set(json, "memory", memory_block);
+
+    // Network interfaces
+    json_t *interfaces = json_array();
+    for (network_interface *iter = m->network_interfaces; iter; iter = iter->next) {
+        json_t *interface = json_object();
+        json_object_set(interface, "name", json_string(iter->interface_name));
+
+        json_t *addresses = json_object();
+        json_t *ipv4_addresses = json_array();
+        json_t *ipv6_addresses = json_array();
+        for (net_address *address = iter->addresses; address; address = address->next)
+            if (address->type == IPV4)
+                json_array_append(ipv4_addresses, json_string(address->ip_address));
+            else if (address->type == IPV6)
+                json_array_append(ipv6_addresses, json_string(address->ip_address));
+
+
+        json_object_set(addresses, "ipv4", ipv4_addresses);
+        json_object_set(addresses, "ipv6", ipv6_addresses);
+        json_object_set(interface, "addresses", addresses);
+        json_array_append(interfaces, interface);
+    }
+    json_object_set(json, "interfaces", interfaces);
 
     // Drives
     json_t *drives = json_array();
