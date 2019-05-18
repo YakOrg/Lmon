@@ -12,8 +12,11 @@
 #include <malloc.h>
 #include "libhttp.h"
 
-#define HEADER_READ_SIZE 512
-#define BASE_BODY "HTTP/1.1 200 OK\r\nStatus: 200 OK\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"
+#define HEADER \
+    "HTTP/1.1 200 OK\r\n" \
+    "Content-Type: application/json; charset=UTF-8\r\n" \
+    "Content-Length: %li\r\n" \
+    "\r\n%s"
 
 void startHttpServer(char *(*genPage)(), int port);
 

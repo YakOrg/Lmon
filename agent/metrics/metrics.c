@@ -99,9 +99,6 @@ network_interface* get_interfaces(void)
     /*iterator*/
     network_interface* it         = NULL;
 
-    /*memset(ipstr, 0, sizeof(ipstr));*/
-    //SET_ZERO(ipstr, sizeof(ipstr));
-
     if(getifaddrs(&ifaddr)) {
         perror("getifaddrs");
         exit(EXIT_FAILURE);

@@ -7,6 +7,8 @@ steps:
     commands:
       - cmake -S .
       - make
+      - cat /drone/src/CMakeFiles/CMakeOutput.log
+      - cat /drone/src/CMakeFiles/CMakeError.log
   - name: gitea_release
     image: plugins/gitea-release
     settings:

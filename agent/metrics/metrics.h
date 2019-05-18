@@ -23,8 +23,6 @@
 #include <malloc.h>
 #include <sys/types.h>
 
-#define SET_ZERO(a, size) memset(a, 0, size)
-
 typedef enum types{
     IPV4,  /*0*/
     IPV6,  /*1*/
@@ -42,6 +40,7 @@ typedef struct network_interface{
     struct  network_interface *next;
     net_address*    addresses;
 }network_interface;
+
 typedef struct drive {
     char *blockPath;
     char *mountPoint;
