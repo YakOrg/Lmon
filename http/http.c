@@ -4,46 +4,29 @@
 
 #include "http.h"
 
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <err.h>
-#include <string.h>
-#include <malloc.h>
+static int begin_request_handler(struct lh_ctx_t *ctx, struct lh_con_t *conn, void *data) {
+    char *resp = ((char *(*)()) data)();
+    httplib_printf(ctx, conn, HEADER, strlen(resp) * sizeof(char), resp);
+    free(resp);
+    return 1;
+}
 
-void startHttpServer(char *(*genPage)(), int port) {
-    int one = 1, client_fd;
-    struct sockaddr_in svr_addr, cli_addr;
-    socklen_t sin_len = sizeof(cli_addr);
+void start_http_server_no_blocking(char *(*src)(), int port) {
+    struct lh_ctx_t *ctx;
+    struct lh_clb_t callbacks;
 
-    int sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock < 0) err(1, "can't open socket");
-    setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
+    char str_port[16];
+    sprintf(str_port, "%d", port);
+    printf("HTTP server started on port %d\n", port);
 
-    svr_addr.sin_family = AF_INET;
-    svr_addr.sin_addr.s_addr = INADDR_ANY;
-    svr_addr.sin_port = htons(port);
+    // List of options. Last element must be NULL.
+    struct lh_opt_t opt;
+    opt.name = "listening_ports";
+    opt.value = str_port;
 
-    if (bind(sock, (struct sockaddr *) &svr_addr, sizeof(svr_addr)) == -1) {
-        close(sock);
-        err(1, "Can't bind");
-    }
-    listen(sock, 5);
-
-    printf("HTTP server running on port: %d\n", port);
-    for (;;) {
-        client_fd = accept(sock, (struct sockaddr *) &cli_addr, &sin_len);
-
-        // Read client req data
-        // If we don't do this, we will get the error "connection reset by peer"
-        char buf[HEADER_READ_SIZE];
-        if (recv(client_fd, buf, HEADER_READ_SIZE, 0) < 0) continue;
-
-        // Invoke function and generate response
-        char resp[4096] = BASE_BODY;
-        strcat(resp, genPage());
-
-        // Write response and close socket
-        write(client_fd, resp, strlen(resp));
-        close(client_fd);
-    }
+    // Prepare callbacks structure. We have only one callback, the rest are NULL.
+    memset(&callbacks, 0, sizeof(callbacks));
+    // Start the web server.
+    ctx = httplib_start(&callbacks, NULL, &opt);
+    httplib_set_request_handler(ctx, "/", begin_request_handler, src);
 }

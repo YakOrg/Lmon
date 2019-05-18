@@ -5,9 +5,19 @@
 #ifndef LMON_HTTP_H
 #define LMON_HTTP_H
 
-#define HEADER_READ_SIZE 512
-#define BASE_BODY "HTTP/1.1 200 OK\r\nStatus: 200 OK\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n"
+#include <unistd.h>
+#include <arpa/inet.h>
+#include <err.h>
+#include <string.h>
+#include <malloc.h>
+#include "libhttp.h"
 
-void startHttpServer(char *(*genPage)(), int port);
+#define HEADER \
+    "HTTP/1.1 200 OK\r\n" \
+    "Content-Type: application/json; charset=UTF-8\r\n" \
+    "Content-Length: %li\r\n" \
+    "\r\n%s"
+
+void start_http_server_no_blocking(char *(*genPage)(), int port);
 
 #endif //LMON_HTTP_H
