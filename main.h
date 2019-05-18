@@ -8,6 +8,6 @@
 #include "agent/agent.h"
 #include "server/discovery.h"
 
-void start_agent_as_daemon(int port)
+void start_agent_as_daemon(int port);
 
 #endif
