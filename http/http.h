@@ -18,6 +18,6 @@
     "Content-Length: %li\r\n" \
     "\r\n%s"
 
-void startHttpServer(char *(*genPage)(), int port);
+void start_http_server_no_blocking(char *(*genPage)(), int port);
 
 #endif //LMON_HTTP_H

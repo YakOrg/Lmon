@@ -14,5 +14,11 @@ char *genPage() {
 }
 
 void startAgent(int httpPort) {
-    startHttpServer(genPage, httpPort);
+    start_http_server_no_blocking(genPage, httpPort);
+
+    // Endless loop
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
+    for (;;) {}
+#pragma clang diagnostic pop
 }
