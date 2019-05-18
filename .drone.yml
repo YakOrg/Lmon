@@ -3,12 +3,11 @@ name: default
 
 steps:
   - name: build
-    image: registry.oceancraft.ru/lmon-build-env
+    image: registry.oceancraft.ru/lmon-build-env:a03e92c753066113bf7c2ae799f459740a4de2a1
     commands:
+      - ls /usr/lib/libhttp
       - cmake -S .
       - make
-      - cat /drone/src/CMakeFiles/CMakeOutput.log
-      - cat /drone/src/CMakeFiles/CMakeError.log
   - name: gitea_release
     image: plugins/gitea-release
     settings:
