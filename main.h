@@ -8,4 +8,7 @@
 #include "agent/agent.h"
 #include "server/discovery.h"
 
+void daemon_start_agent(int port);
+void write_daemon_log();
+
 #endif
