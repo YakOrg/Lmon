@@ -1,16 +1,15 @@
 #include "main.h"
 
-void write_daemon_log(){/*TODO*/}
+void write_daemon_log() {/*TODO*/}
 
 void daemon_start_agent(int port){
     if(daemon(0,0) != 0){
-        /*fail*/
         fprintf(STDERR_FILENO, "can`t start agent as daemon");
         exit(EXIT_FAILURE);
     }
 
     startAgent(port);
-};
+}
 
 void printUsage() {
     printf(
@@ -38,14 +37,14 @@ int main(int argc, char **argv) {
             as_daemon = 1;
     }
 
-    if (strcmp(argv[1], "server") == 0)
+    if (strcmp(argv[1], "server") == 0) {
         startServer(httpPort);
-    else if (strcmp(argv[1], "agent") == 0){
-        if(as_daemon == 1)
+    } else if (strcmp(argv[1], "agent") == 0) {
+        if (as_daemon == 1)
             daemon_start_agent(httpPort);
         else
             startAgent(httpPort);
-    }else printUsage();
+    } else printUsage();
 
     return 0;
 }
