@@ -17,7 +17,7 @@ void start_http_server_no_blocking(char *(*src)(), int port) {
 
     char str_port[16];
     sprintf(str_port, "%d", port);
-    printf("HTTP server started on port %d\n", port);
+    log_info("HTTP server started on port %d", port);
 
     // List of options. Last element must be NULL.
     struct lh_opt_t opt;

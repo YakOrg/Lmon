@@ -10,6 +10,7 @@
 #include <err.h>
 #include <string.h>
 #include <malloc.h>
+#include "../log/log.h"
 #include "libhttp.h"
 
 #define HEADER \

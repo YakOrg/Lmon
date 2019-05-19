@@ -1,4 +1,6 @@
 # ---> C
+# CLion
+.idea/*
 # Prerequisites
 *.d
 
