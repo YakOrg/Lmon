@@ -3,9 +3,8 @@ name: default
 
 steps:
   - name: build
-    image: registry.oceancraft.ru/lmon-build-env:a03e92c753066113bf7c2ae799f459740a4de2a1
+    image: registry.oceancraft.ru/lmon-build-env:3bb576aded3430f8e85e1802857256b7abb1e645
     commands:
-      - ls /usr/lib/libhttp
       - cmake -S .
       - make
   - name: gitea_release

@@ -77,5 +77,4 @@ char *genFrontEnd() {
 void startServer(int httpPort) {
     startBroadcastSender();
     // TODO : Receive node ip from http header
-    start_http_server_no_blocking(genFrontEnd, httpPort);
 }
