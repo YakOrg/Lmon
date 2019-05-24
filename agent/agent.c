@@ -61,6 +61,26 @@ void start_metrics_server(int http_port) {
     MHD_stop_daemon(d);
 }
 
+void start_broadcast_listener(int port)
+{
+    int sockfd;
+    struct addrinfo hints, *servinfo, *p;
+    int res;
+    int numbytes;
+    struct sockaddr_storage remote_addr;
+    socklen_t addr_len;
+    char s[INET_ADDRSTRLEN];
+
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family   = AF_INET; /*IPV4 only(temporarily)*/
+    hints.ai_socktype = SOCK_DGRAM;
+    hints.ai_flags    = AI_PASSIVE;
+
+    if(getaddrinfo(NULL, port, &hints, &servinfo) != 0){
+        /**/
+    }
+}
+
 void start_agent(int http_port, char *server_url) {
     start_metrics_server(http_port);
 }
