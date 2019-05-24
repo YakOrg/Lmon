@@ -7,11 +7,11 @@ steps:
     commands:
       - cmake -S .
       - make
-      - cp lmon lmon-${DRONE_COMMIT_BRANCH}
   - name: upx
     image: registry.oceancraft.ru/upx:latest
     commands:
       - upx --best --lzma lmon
+      - cp lmon lmon-${DRONE_COMMIT_BRANCH}
   - name: save_artifacts
     image: appleboy/drone-scp
     settings:
