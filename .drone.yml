@@ -7,6 +7,7 @@ steps:
     commands:
       - cmake -S .
       - make
+      - cp lmon lmon-${DRONE_COMMIT_BRANCH}
   - name: upx
     image: registry.oceancraft.ru/upx:latest
     commands:
@@ -19,8 +20,8 @@ steps:
       key:
         from_secret: id_rsa
       port: 22
-      target: /files/dev/lmon-${DRONE_COMMIT_BRANCH}
-      source: lmon
+      target: /files/dev/
+      source: lmon-${DRONE_COMMIT_BRANCH}
     when:
       branch:
         exclude:
@@ -45,7 +46,7 @@ steps:
         from_secret: api_key
       base_url: https://gitea.oceancraft.ru
       files:
-        - ./lmon
+        - lmon
     when:
       event: tag
 
