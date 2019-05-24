@@ -7,11 +7,10 @@ steps:
     commands:
       - cmake -S .
       - make
-      - mv lmon lmon-${DRONE_COMMIT_BRANCH}
   - name: upx
     image: registry.oceancraft.ru/upx:latest
     commands:
-      - upx --best --lzma lmon-${DRONE_COMMIT_BRANCH}
+      - upx --best --lzma lmon
   - name: save_artifacts
     image: appleboy/drone-scp
     settings:
@@ -20,8 +19,8 @@ steps:
       key:
         from_secret: id_rsa
       port: 22
-      target: /files/dev/
-      source: lmon-${DRONE_COMMIT_BRANCH}
+      target: /files/dev/lmon-${DRONE_COMMIT_BRANCH}
+      source: lmon
     when:
       branch:
         exclude:
@@ -34,8 +33,8 @@ steps:
       key:
         from_secret: id_rsa
       port: 22
-      target: /files/lmon
-      source: lmon-${DRONE_COMMIT_BRANCH}
+      target: /files/
+      source: lmon
     when:
       branch:
         - master
