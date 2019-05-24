@@ -8,6 +8,10 @@ steps:
       - cmake -S .
       - make
       - mv lmon lmon-${DRONE_COMMIT_BRANCH}
+  - name: upx
+    image: gruebel/upx:latest
+    commands:
+      - upx --best --lzma lmon-${DRONE_COMMIT_BRANCH}
   - name: save_artifacts
     image: appleboy/drone-scp
     settings:
