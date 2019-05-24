@@ -77,7 +77,7 @@ void start_broadcast_listener(int port)
     hints.ai_flags    = AI_PASSIVE;
 
     if(getaddrinfo(NULL, port, &hints, &servinfo) != 0){
-        /**/
+        /*TODO*/
     }
 }
 
