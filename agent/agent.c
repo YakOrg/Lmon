@@ -61,7 +61,17 @@ void start_metrics_server(int http_port) {
     MHD_stop_daemon(d);
 }
 
-void start_broadcast_listener(int port)
+void *get_in_addr(struct sockaddr *sa)
+{
+    if (sa->sa_family == AF_INET) {
+        return &(((struct sockaddr_in*)sa)->sin_addr);
+    }
+
+    return &(((struct sockaddr_in6*)sa)->sin6_addr);
+}
+
+/*return ip of the server(and so on...)*/
+char* start_broadcast_listener(char* port)
 {
     int sockfd;
     struct addrinfo hints, *servinfo, *p;
@@ -69,18 +79,80 @@ void start_broadcast_listener(int port)
     int numbytes;
     struct sockaddr_storage remote_addr;
     socklen_t addr_len;
-    char s[INET_ADDRSTRLEN];
+    char str_addr[INET_ADDRSTRLEN];
 
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family   = AF_INET; /*IPV4 only(temporarily)*/
+    hints.ai_family   = AF_UNSPEC; /*IPV4 or IPV6*/
     hints.ai_socktype = SOCK_DGRAM;
     hints.ai_flags    = AI_PASSIVE;
 
     if(getaddrinfo(NULL, port, &hints, &servinfo) != 0){
-        /*TODO*/
+        perror("getaddrinfo");
+        exit(EXIT_FAILURE);
     }
+
+    /*cycle through all the results, bind to the first possible*/
+    for(p = servinfo; p != NULL; p = p->ai_next) {
+        if ((sockfd = socket(p->ai_family, p->ai_socktype,
+                             p->ai_protocol)) == -1) {
+            perror("listener: socket");
+            continue;
+        }
+
+        if (bind(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
+            close(sockfd);
+            perror("listener: bind");
+            continue;
+        }
+
+        break;
+    }
+
+    if(p == NULL){
+        perror("listener");
+        exit(EXIT_FAILURE);
+    }
+
+    addr_len = sizeof remote_addr;
+    /*you can remove numbytes (would it be useful in the future?)*/
+    if ((numbytes = recvfrom(sockfd, NULL, INET_ADDRSTRLEN-1 , 0,
+                             (struct sockaddr *)&remote_addr, &addr_len)) == -1) {
+        perror("recvfrom");
+        exit(1);
+    }
+
+    inet_ntop(remote_addr.ss_family,
+              get_in_addr((struct sockaddr *)&remote_addr),
+              str_addr, sizeof(str_addr));
+
+    /*now str_addr contains the ip of the server(string)*/
+
+    CURL *curl;
+
+    curl = curl_easy_init();
+
+    if(curl){
+        /*instead of "SERVER_URL" you can try str_addr
+         * and it`s will be work
+        */
+        curl_easy_setopt(curl, CURLOPT_URL, "SERVER_URL");
+        /*OK, let`s specify the POST data*/
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, "ip and port");
+
+        res = curl_easy_perform(curl);
+        if(res != CURLE_OK)
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                    curl_easy_strerror(res));
+
+        curl_easy_cleanup(curl);
+    }
+
+    curl_global_cleanup();
+
+    return str_addr;
 }
 
 void start_agent(int http_port, char *server_url) {
+    start_broadcast_listener("1973");
     start_metrics_server(http_port);
 }

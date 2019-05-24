@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <netdb.h>
+#include <curl/curl.h>
 #include <microhttpd.h>
 
 #include "../http/http.h"
@@ -16,5 +17,7 @@
 #include "json/json.h"
 
 void start_agent(int http_port, char *server_url);
+char* start_broadcast_listener(char* port);
+void *get_in_addr(struct sockaddr *sa);
 
 #endif //LMON_AGENT_H
