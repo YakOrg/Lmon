@@ -3,7 +3,7 @@ name: default
 
 steps:
   - name: build
-    image: registry.oceancraft.ru/lmon-build-env:3bb576aded3430f8e85e1802857256b7abb1e645
+    image: registry.oceancraft.ru/lmon-build-env:f5b99afd0d8c42fceb9b1407aa27332fc043f099
     commands:
       - cmake -S .
       - make
