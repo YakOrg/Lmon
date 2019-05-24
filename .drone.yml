@@ -11,6 +11,7 @@ steps:
     image: registry.oceancraft.ru/upx:latest
     commands:
       - upx --best --lzma lmon
+      - cp lmon lmon-${DRONE_COMMIT_BRANCH}
   - name: save_artifacts
     image: appleboy/drone-scp
     settings:
@@ -19,8 +20,8 @@ steps:
       key:
         from_secret: id_rsa
       port: 22
-      target: /files/dev/lmon-${DRONE_COMMIT_BRANCH}
-      source: lmon
+      target: /files/dev/
+      source: lmon-${DRONE_COMMIT_BRANCH}
     when:
       branch:
         exclude:
@@ -45,7 +46,7 @@ steps:
         from_secret: api_key
       base_url: https://gitea.oceancraft.ru
       files:
-        - ./lmon
+        - lmon
     when:
       event: tag
 
