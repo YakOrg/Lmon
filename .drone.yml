@@ -9,7 +9,7 @@ steps:
       - make
       - mv lmon lmon-${DRONE_COMMIT_BRANCH}
   - name: upx
-    image: gruebel/upx:latest
+    image: registry.oceancraft.ru/upx:latest
     commands:
       - upx --best --lzma lmon-${DRONE_COMMIT_BRANCH}
   - name: save_artifacts
