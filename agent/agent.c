@@ -27,16 +27,16 @@ static int handler(void *cls,
                    size_t *upload_data_size,
                    void **ptr) {
 
-    const char *page = cls;
+    char *(*gen_page)() = cls;
     struct MHD_Response *response = NULL;
     int ret;
 
-    if (0 != strcmp(method, "GET"))
-        return MHD_NO; /* unexpected method */
+    if (0 != strcmp(method, "GET")) return MHD_NO;
 
     if (strcmp(url, "/") == 0) {
-        response = MHD_create_response_from_buffer(strlen(page), (void *) page, MHD_RESPMEM_PERSISTENT);
-        MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "application/json");
+        char *content = gen_page();
+        response = MHD_create_response_from_buffer(strlen(content), (void *) content, MHD_RESPMEM_PERSISTENT);
+        MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "application/json; charset=utf-8");
         ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
     } else {
         response = MHD_create_response_from_buffer(strlen(NOT_FOUND), NOT_FOUND, MHD_RESPMEM_PERSISTENT);
@@ -55,7 +55,7 @@ void start_metrics_server(int http_port) {
                          NULL,
                          NULL,
                          &handler,
-                         json_metrics(),
+                         json_metrics,
                          MHD_OPTION_END);
     getchar();
     MHD_stop_daemon(d);
