@@ -7,6 +7,34 @@ steps:
     commands:
       - cmake -S .
       - make
+      - mv lmon lmon-${DRONE_COMMIT_BRANCH}
+  - name: save_artifacts
+    image: appleboy/drone-scp
+    settings:
+      host: artifacts
+      username: root
+      key:
+        from_secret: id_rsa
+      port: 22
+      target: /files/dev/
+      source: lmon-${DRONE_COMMIT_BRANCH}
+    when:
+      branch:
+        exclude:
+          - master
+  - name: release
+    image: appleboy/drone-scp
+    settings:
+      host: artifacts
+      username: root
+      key:
+        from_secret: id_rsa
+      port: 22
+      target: /files/lmon
+      source: lmon-${DRONE_COMMIT_BRANCH}
+    when:
+      branch:
+        - master
   - name: gitea_release
     image: plugins/gitea-release
     settings:
