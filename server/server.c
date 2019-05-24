@@ -15,19 +15,20 @@ static int handler(void *cls,
     struct MHD_Response *response = NULL;
     int ret;
 
-    agent *agents = (agent *) cls;
+    struct Agent *agents = (agent *) cls;
 
-    if (0 != strcmp(method, "GET") || 0 != strcmp(method, "POST"))
+    if (0 != strcmp(method, "GET") && 0 != strcmp(method, "POST"))
         return MHD_NO;
 
     if (strcmp(url, "/") == 0) {
-        char *content = "TODO ;)";
+        char *content = fetch_data_from_agents(agents);
         response = MHD_create_response_from_buffer(strlen(content), (void *) content, MHD_RESPMEM_PERSISTENT);
         MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "application/json; charset=utf-8");
         ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
     } else if (strcmp(url, "/agents/add") == 0 && !strcmp(method, "POST")) {
+        MHD_lookup_connection_value(connection, MHD_POSTDATA_KIND, NULL);
         // TODO : Get agent data from json received by POST
-        char *content = "\"OK\"";
+        char *content = "123";
         response = MHD_create_response_from_buffer(strlen(content), (void *) content, MHD_RESPMEM_PERSISTENT);
         MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "application/json; charset=utf-8");
         ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
@@ -41,7 +42,7 @@ static int handler(void *cls,
     return ret;
 }
 
-void runHttpd(int port, agent *agents) {
+void run_httpd(int port, agent *agents) {
     struct MHD_Daemon *d;
     d = MHD_start_daemon(MHD_USE_INTERNAL_POLLING_THREAD,
                          port,
@@ -54,7 +55,8 @@ void runHttpd(int port, agent *agents) {
     MHD_stop_daemon(d);
 }
 
-void startServer(int httpPort) {
+void start_server(int httpPort) {
     agent *agents = NULL;
-    runHttpd(httpPort, agents);
+    run_httpd(httpPort, agents);
+    run_blocking_brodcast();
 }

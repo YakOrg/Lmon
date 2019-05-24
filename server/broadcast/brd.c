@@ -4,7 +4,7 @@
 
 #include "brd.h"
 
-void *sendBroadcast() {
+void run_blocking_brodcast() {
     int sock;                         /* Socket */
     struct sockaddr_in broadcastAddr; /* Broadcast address */
     char *broadcastIP;                /* IP broadcast address */
@@ -40,11 +40,6 @@ void *sendBroadcast() {
         if (sendto(sock, sendString, sendStringLen, 0, (struct sockaddr *)
                 &broadcastAddr, sizeof(broadcastAddr)) != sendStringLen)
             err(1, "sendString err");
-
         sleep(10);   /* Avoids flooding the network */
     }
-}
-
-void startBroadcastSender() {
-
 }
