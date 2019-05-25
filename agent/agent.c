@@ -27,6 +27,7 @@ static int handler(void *cls,
                    size_t *upload_data_size,
                    void **ptr) {
 
+    const char *page = cls;
     struct MHD_Response *response = NULL;
     int ret;
 
@@ -150,6 +151,6 @@ char *start_broadcast_listener(char *port) {
 }
 
 void start_agent(int http_port, char *server_url) {
-    start_broadcast_listener("1973");
     start_metrics_server(http_port);
+    start_broadcast_listener("1973");
 }

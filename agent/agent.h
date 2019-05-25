@@ -22,4 +22,8 @@ char *start_broadcast_listener(char *port);
 
 void *get_in_addr(struct sockaddr *sa);
 
+char *start_broadcast_listener(char *port);
+
+void *get_in_addr(struct sockaddr *sa);
+
 #endif //LMON_AGENT_H
