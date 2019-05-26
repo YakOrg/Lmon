@@ -15,15 +15,11 @@
 #include "../http/http.h"
 #include "metrics/metrics.h"
 #include "json/json.h"
+#include "../utils/utils.h"
+#include "../main.h"
+
+#define BRD_RECIVE_BUF_SIZE 256
 
 void start_agent(int http_port, char *server_url);
-
-char *start_broadcast_listener(char *port);
-
-void *get_in_addr(struct sockaddr *sa);
-
-char *start_broadcast_listener(char *port);
-
-void *get_in_addr(struct sockaddr *sa);
 
 #endif //LMON_AGENT_H

@@ -8,7 +8,7 @@ SET(CMAKE_EXE_LINKER_FLAGS "-Wall -Os -O3 -static -pthread -Wl,--whole-archive -
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
-add_executable(lmon main.c agent/json/json.c agent/json/json.h main.h http/http.h agent/metrics/metrics.c agent/metrics/metrics.h agent/agent.c agent/agent.h server/server.c server/server.h log/log.c log/log.h server/fetch/fetch.c server/fetch/fetch.h server/broadcast/brd.c server/broadcast/brd.h)
+add_executable(lmon main.c agent/json/json.c agent/json/json.h main.h http/http.h agent/metrics/metrics.c agent/metrics/metrics.h agent/agent.c agent/agent.h server/server.c server/server.h log/log.c log/log.h server/agent.h server/fetch/fetch.c server/fetch/fetch.h server/broadcast/brd.c server/broadcast/brd.h http/http.c utils/utils.c utils/utils.h)
 
 find_package(Threads)
 target_link_libraries(lmon ${CMAKE_THREAD_LIBS_INIT})

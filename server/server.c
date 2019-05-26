@@ -4,6 +4,75 @@
 
 #include "server.h"
 
+int contains(agent *agents, char *endpoint) {
+    if (!agents) return 0;
+    for (agent *iter = agents->first; iter; iter = iter->next)
+        if (!strcmp(iter->endpoint, endpoint))
+            return 1;
+    return 0;
+}
+
+char *add_agent(agent **agents_pointer_to_pointer, char *post_data) {
+    agent *agents = *agents_pointer_to_pointer;
+    char *resp = malloc(MAXANSWERSIZE);
+    if (contains(agents, post_data)) {
+        sprintf(resp, "\"PRESENT\"");
+    } else {
+        agent *agent = malloc(sizeof(struct Agent));
+        char *endpoint = malloc(sizeof(char) * 256);
+        sprintf(endpoint, "%s", post_data);
+        agent->endpoint = endpoint;
+        agent->next = NULL;
+        if (!agents) {
+            agent->first = agent;
+        } else {
+            agent->first = agents->first;
+            agents->next = agent;
+        }
+        *agents_pointer_to_pointer = agent;
+        sprintf(resp, "\"OK\"");
+    }
+    return resp;
+}
+
+static int iterate_post(void *coninfo_cls, enum MHD_ValueKind kind, const char *key,
+                        const char *filename, const char *content_type,
+                        const char *transfer_encoding, const char *data, uint64_t off,
+                        size_t size) {
+    struct connection_info_struct *con_info = coninfo_cls;
+    if (0 == strcmp(key, "endpoint")) {
+        if (size > 0) {
+            char *answerstring;
+            answerstring = malloc(MAXANSWERSIZE);
+            if (!answerstring) return MHD_NO;
+            snprintf(answerstring, MAXANSWERSIZE, "%s", data);
+            con_info->answerstring = answerstring;
+        } else
+            con_info->answerstring = NULL;
+
+        return MHD_NO;
+    }
+
+    return MHD_YES;
+}
+
+static void request_completed(void *cls, struct MHD_Connection *connection,
+                              void **con_cls, enum MHD_RequestTerminationCode toe) {
+    struct connection_info_struct *con_info = *con_cls;
+
+    if (NULL == con_info)
+        return;
+
+    if (con_info->connectiontype == POST) {
+        MHD_destroy_post_processor(con_info->postprocessor);
+        if (con_info->answerstring)
+            free(con_info->answerstring);
+    }
+
+    free(con_info);
+    *con_cls = NULL;
+}
+
 static int handler(void *cls,
                    struct MHD_Connection *connection,
                    const char *url,
@@ -11,52 +80,73 @@ static int handler(void *cls,
                    const char *version,
                    const char *upload_data,
                    size_t *upload_data_size,
-                   void **ptr) {
-    struct MHD_Response *response = NULL;
-    int ret;
+                   void **con_cls) {
 
-    struct Agent *agents = (agent *) cls;
+    int status;
+    agent **agents_pointer_to_pointer = (agent **) cls;
+    agent *agents = *agents_pointer_to_pointer;
 
-    if (0 != strcmp(method, "GET") && 0 != strcmp(method, "POST"))
+    if (!strcmp(method, "GET") && !strcmp(method, "POST"))
         return MHD_NO;
+    else if (!strcmp(url, "/"))
+        status = send_json(connection, fetch_data_from_agents(agents));
+    else if (!strcmp(url, "/agents/add") && !strcmp(method, "POST")) {
+        if (!*con_cls) {
+            struct connection_info_struct *con_info;
+            con_info = malloc(sizeof(struct connection_info_struct));
+            if (!con_info) return MHD_NO;
+            con_info->answerstring = NULL;
+            con_info->postprocessor =
+                    MHD_create_post_processor(connection, POSTBUFFERSIZE,
+                                              iterate_post, (void *) con_info);
 
-    if (strcmp(url, "/") == 0) {
-        char *content = fetch_data_from_agents(agents);
-        response = MHD_create_response_from_buffer(strlen(content), (void *) content, MHD_RESPMEM_PERSISTENT);
-        MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "application/json; charset=utf-8");
-        ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
-    } else if (strcmp(url, "/agents/add") == 0 && !strcmp(method, "POST")) {
-        MHD_lookup_connection_value(connection, MHD_POSTDATA_KIND, NULL);
-        // TODO : Get agent data from json received by POST
-        char *content = "123";
-        response = MHD_create_response_from_buffer(strlen(content), (void *) content, MHD_RESPMEM_PERSISTENT);
-        MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "application/json; charset=utf-8");
-        ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+            if (NULL == con_info->postprocessor) {
+                free(con_info);
+                return MHD_NO;
+            }
+
+            con_info->connectiontype = POST;
+            *con_cls = (void *) con_info;
+            return MHD_YES;
+        }
+
+        struct connection_info_struct *con_info = *con_cls;
+
+        if (*upload_data_size != 0) {
+            MHD_post_process(con_info->postprocessor, upload_data, *upload_data_size);
+            *upload_data_size = 0;
+            return MHD_YES;
+        } else if (con_info->answerstring) {
+            status = send_json(connection,
+                               add_agent(agents_pointer_to_pointer, con_info->answerstring));
+        } else {
+            status = bad_request(connection);
+        }
+
     } else {
-        response = MHD_create_response_from_buffer(strlen(NOT_FOUND), NOT_FOUND, MHD_RESPMEM_PERSISTENT);
-        MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "text/plain; charset=utf-8");
-        ret = MHD_queue_response(connection, MHD_HTTP_NOT_FOUND, response);
+        status = not_found(connection);
     }
 
-    MHD_destroy_response(response);
-    return ret;
+    return status;
 }
 
-void run_httpd(int port, agent *agents) {
-    struct MHD_Daemon *d;
-    d = MHD_start_daemon(MHD_USE_INTERNAL_POLLING_THREAD,
-                         port,
-                         NULL,
-                         NULL,
-                         &handler,
-                         agents,
-                         MHD_OPTION_END);
-    getchar();
-    MHD_stop_daemon(d);
+void run_httpd(int port, agent **agent) {
+    MHD_start_daemon(MHD_USE_SELECT_INTERNALLY,
+                     port,
+                     NULL,
+                     NULL,
+                     &handler,
+                     agent,
+                     MHD_OPTION_NOTIFY_COMPLETED,
+                     request_completed,
+                     NULL,
+                     MHD_OPTION_END);
 }
 
-void start_server(int httpPort) {
-    agent *agents = NULL;
-    run_httpd(httpPort, agents);
-    run_blocking_brodcast();
+void start_server(int http_port) {
+    agent **agent_p = malloc(sizeof(agent *));
+    *agent_p = NULL;
+
+    run_httpd(http_port, agent_p);
+    run_blocking_broadcast(itoa(http_port));
 }

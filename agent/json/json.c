@@ -4,6 +4,32 @@
 
 #include "json.h"
 
+json_t *net_interfaces_json(network_interface *network_interfaces) {
+    json_t *interfaces = json_array();
+    for (network_interface *iter = network_interfaces; iter; iter = iter->next) {
+        json_t *interface = json_object();
+        json_object_set(interface, "name", json_string(iter->interface_name));
+
+        json_t *addresses = json_object();
+        json_t *ipv4_addresses = json_array();
+        json_t *ipv6_addresses = json_array();
+        for (net_address *address = iter->addresses; address; address = address->next)
+            if (address->type == IPV4)
+                json_array_append(ipv4_addresses, json_string(address->ip_address));
+            else if (address->type == IPV6)
+                json_array_append(ipv6_addresses, json_string(address->ip_address));
+
+        if (!json_array_size(ipv4_addresses) && !json_array_size(ipv6_addresses))
+            continue;
+
+        json_object_set(addresses, "ipv4", ipv4_addresses);
+        json_object_set(addresses, "ipv6", ipv6_addresses);
+        json_object_set(interface, "addresses", addresses);
+        json_array_append(interfaces, interface);
+    }
+    return interfaces;
+}
+
 json_t *make_json(metrics *m) {
     json_t* json = json_object();
 
@@ -47,27 +73,7 @@ json_t *make_json(metrics *m) {
     json_object_set(json, "memory", memory_block);
 
     // Network interfaces
-    json_t *interfaces = json_array();
-    for (network_interface *iter = m->network_interfaces; iter; iter = iter->next) {
-        json_t *interface = json_object();
-        json_object_set(interface, "name", json_string(iter->interface_name));
-
-        json_t *addresses = json_object();
-        json_t *ipv4_addresses = json_array();
-        json_t *ipv6_addresses = json_array();
-        for (net_address *address = iter->addresses; address; address = address->next)
-            if (address->type == IPV4)
-                json_array_append(ipv4_addresses, json_string(address->ip_address));
-            else if (address->type == IPV6)
-                json_array_append(ipv6_addresses, json_string(address->ip_address));
-
-
-        json_object_set(addresses, "ipv4", ipv4_addresses);
-        json_object_set(addresses, "ipv6", ipv6_addresses);
-        json_object_set(interface, "addresses", addresses);
-        json_array_append(interfaces, interface);
-    }
-    json_object_set(json, "interfaces", interfaces);
+    json_object_set(json, "interfaces", net_interfaces_json(m->network_interfaces));
 
     // Drives
     json_t *drives = json_array();

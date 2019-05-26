@@ -13,6 +13,8 @@
 #include <unistd.h>
 #include <err.h>
 
-void run_blocking_brodcast();
+#include "../../log/log.h"
+
+void run_blocking_broadcast(char *sendString);
 
 #endif //LMON_BRD_H
