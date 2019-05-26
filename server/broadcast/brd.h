@@ -12,8 +12,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <err.h>
+#include <pthread.h>
 
 #include "../../log/log.h"
+#include "../../agent/metrics/metrics.h"
 
 void run_blocking_broadcast(char *sendString);
 
