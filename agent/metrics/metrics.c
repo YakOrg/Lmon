@@ -30,15 +30,15 @@ network_interface* create_int_list(char* name)
     return t;
 }
 
-void add_new_addr(network_interface* t, struct sockaddr* a)
-{
-    char *ipstr;
+void add_new_addr(network_interface *t, struct ifaddrs *a) {
+    char *ipstr, *maskstr;
 
     net_address* it          = t->addresses;
-    struct sockaddr_in* addr = (struct sockaddr_in*) a;
+    struct sockaddr_in *addr = (struct sockaddr_in *) a->ifa_addr;
+    struct sockaddr_in *mask = (struct sockaddr_in *) a->ifa_netmask;
 
     if(it == NULL){
-        it       = (net_address*) malloc(sizeof(net_address));
+        it = (net_address *) malloc(sizeof(net_address));
         it->next = NULL;
         t->addresses = it;
         goto fill_the_gaps;
@@ -53,11 +53,13 @@ void add_new_addr(network_interface* t, struct sockaddr* a)
     fill_the_gaps:
     switch(addr->sin_family){
         case AF_INET:
-            ipstr    = (char*) malloc(INET_ADDRSTRLEN);
+            ipstr = malloc(INET_ADDRSTRLEN);
+            maskstr = malloc(INET_ADDRSTRLEN);
             it->type = IPV4;
             break;
         case AF_INET6:
-            ipstr = (char*) malloc(INET6_ADDRSTRLEN);
+            ipstr = malloc(INET6_ADDRSTRLEN);
+            maskstr = malloc(INET6_ADDRSTRLEN);
             it->type = IPV6;
             break;
         default:
@@ -66,12 +68,14 @@ void add_new_addr(network_interface* t, struct sockaddr* a)
             return;
     }
 
-    ipstr = (char*)inet_ntop(addr->sin_family, &(addr->sin_addr), ipstr, INET6_ADDRSTRLEN);
+    ipstr = (char *) inet_ntop(addr->sin_family, &(addr->sin_addr), ipstr, INET6_ADDRSTRLEN);
     if(ipstr == NULL)
         perror("INET_NTOP");
 
-    it->ip_address = ipstr;
+    maskstr = (char *) inet_ntop(mask->sin_family, &(mask->sin_addr), maskstr, INET6_ADDRSTRLEN);
 
+    it->ip_address = ipstr;
+    it->net_mask = maskstr;
 }
 
 network_interface* add_new_int(network_interface* in, char* name)
@@ -110,14 +114,14 @@ network_interface* get_interfaces(void)
             /*create first element*/
             interfaces = create_int_list(ifa->ifa_name);
             /*assign him address*/
-            add_new_addr(interfaces, ifa->ifa_addr);
+            add_new_addr(interfaces, ifa);
             it = interfaces;
         }else{
             network_interface *t = find_struct_by_name(interfaces, ifa->ifa_name);
             if(t != NULL){
-                add_new_addr(t, ifa->ifa_addr);
+                add_new_addr(t, ifa);
             }else{
-                add_new_addr(add_new_int(interfaces, ifa->ifa_name), ifa->ifa_addr);
+                add_new_addr(add_new_int(interfaces, ifa->ifa_name), ifa);
             }
         }
 

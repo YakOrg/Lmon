@@ -10,7 +10,7 @@
 #include "log/log.h"
 
 #include "agent/agent.h"
-#include "server/discovery.h"
+#include "server/server.h"
 
 #define USAGE \
 "NAME:\n"\
@@ -24,6 +24,6 @@
 "   --http-port <PORT> http server port\n"\
 "   --help             show this help\n"\
 "   --daemon           start agent as daemon\n"\
-"   --debug            enable debug log messages"\
+"   --debug            enable debug log messages\n"\
 
 #endif

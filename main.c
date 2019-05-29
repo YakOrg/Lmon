@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    int httpPort = 8080;
+    int http_port = 8080;
     char *enptr;
     int as_daemon = 0;
 
@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
 
     for (int i = 0; i < argc; i++) {
         if (strcmp(argv[i], "--http-port") == 0 && i + 1 < argc)
-            httpPort = strtol(argv[++i], &enptr, 10);
+            http_port = strtol(argv[++i], &enptr, 10);
         if (strcmp(argv[i], "--daemon") == 0)
             as_daemon = 1;
         if (strcmp(argv[i], "--debug") == 0)
@@ -38,12 +38,12 @@ int main(int argc, char **argv) {
     }
 
     if (strcmp(argv[1], "server") == 0) {
-        startServer(httpPort);
+        start_server(http_port);
     } else if (strcmp(argv[1], "agent") == 0) {
         if (as_daemon == 1)
-            daemon_start_agent(httpPort, server_url);
+            daemon_start_agent(http_port, server_url);
         else
-            start_agent(httpPort, server_url);
+            start_agent(http_port, server_url);
     } else printUsage();
 
     return 0;

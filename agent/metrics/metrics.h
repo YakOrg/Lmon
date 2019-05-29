@@ -32,6 +32,7 @@ typedef enum types{
 typedef struct net_address {
     struct  net_address*    next;
     char*   ip_address;
+    char *net_mask;
     types   type;
 } net_address;
 
@@ -49,7 +50,7 @@ typedef struct drive {
     int end;
 } drive;
 
-typedef struct sockaddr_in ip_addr;
+/*typedef struct sockaddr_in ip_addr;*/
 
 typedef struct metrics {
 
@@ -95,8 +96,8 @@ network_interface* create_int_list(char* name);
 network_interface* add_new_int(network_interface* in, char* name);
 
 network_interface* get_interfaces(void);
-  
-void add_new_addr(network_interface* t, struct sockaddr* a);
+
+void add_new_addr(network_interface *t, struct ifaddrs *a);
 
 int get_base_metrics(metrics *m);
 
