@@ -57,8 +57,8 @@ char *handle_url(char *url) {
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &data);
         res = curl_easy_perform(curl);
         if (res != CURLE_OK) {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n",
-                    curl_easy_strerror(res));
+            log_error("fetch data failed: %s",
+                      curl_easy_strerror(res));
         }
 
         curl_easy_cleanup(curl);
