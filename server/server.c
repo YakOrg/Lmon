@@ -16,6 +16,7 @@ char *add_agent(agent **agents_pointer_to_pointer, char *post_data) {
     agent *agents = *agents_pointer_to_pointer;
     char *resp = malloc(MAXANSWERSIZE);
     if (contains(agents, post_data)) {
+        log_trace("agent present in list (%s)", post_data);
         sprintf(resp, "\"PRESENT\"");
     } else {
         agent *agent = malloc(sizeof(struct Agent));
@@ -31,6 +32,7 @@ char *add_agent(agent **agents_pointer_to_pointer, char *post_data) {
         }
         *agents_pointer_to_pointer = agent;
         sprintf(resp, "\"OK\"");
+        log_info("added agent (%s)", post_data);
     }
     return resp;
 }

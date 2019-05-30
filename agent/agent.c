@@ -79,6 +79,7 @@ void send_post(char *server_url, char *endpoint) {
     CURL *curl = curl_easy_init();
     char *data = malloc((11 + strlen(endpoint)) * sizeof(char));
     sprintf(data, "endpoint=%s", endpoint);
+    log_trace("POST (endpoint=%s) --> %s", endpoint, server_url);
     int res;
 
     if (curl) {
@@ -157,7 +158,7 @@ void start_broadcast_listener(int port, void *ptr) {
         recvString[255] = '\0';
 
         const char *ip = get_in_addr((struct sockaddr *) &remote_addr);
-        log_trace("Broadcast received packet from %s, size: %d, content: %s", ip, strlen(recvString), recvString);
+        log_trace("%s --> brd (size: %d, content: %s)", ip, strlen(recvString), recvString);
 
 
         network_interface *network_interfaces = get_interfaces();
@@ -178,11 +179,9 @@ void start_broadcast_listener(int port, void *ptr) {
         int endpoint_port = *((int *) ptr);
         char *endpoint = malloc((9 + strlen(m_address) + int_len(endpoint_port)) * sizeof(char));
         sprintf(endpoint, "http://%s:%d", m_address, endpoint_port);
-        log_trace("Agent ready on %s", endpoint);
         char *server_url = malloc((36 + strlen(recvString)) * sizeof(char));
         sprintf(server_url, "http://%s:%s/agents/add", ip, recvString);
         free((char *) ip);
-        log_trace("Server endpoint: %s", server_url);
         send_post(server_url, endpoint);
         free(recvString);
     }

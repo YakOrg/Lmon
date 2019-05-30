@@ -39,7 +39,7 @@ void *brd(void *ptr) {
     broadcastAddr.sin_port = htons(broadcastPort);          /* Broadcast port */
     sendStringLen = strlen(args->send_str);                     /* Find length of sendString */
     for (;;) {
-        log_trace("send broadcast %s:%d", broadcastIP, broadcastPort);
+        log_trace("brd -> %s:%d (body: %s, size: %d)", broadcastIP, broadcastPort, args->send_str, sendStringLen);
         /* Broadcast sendString in datagram to clients every 10 seconds */
         if (sendto(sock, args->send_str, sendStringLen * sizeof(char), 0,
                    (struct sockaddr *) &broadcastAddr, sizeof(broadcastAddr)) != sendStringLen) {

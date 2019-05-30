@@ -32,6 +32,8 @@ int main(int argc, char **argv) {
         if (strcmp(argv[i], "--daemon") == 0)
             as_daemon = 1;
         if (strcmp(argv[i], "--debug") == 0)
+            log_set_level(LOG_DEBUG);
+        if (strcmp(argv[i], "--trace") == 0)
             log_set_level(LOG_TRACE);
         if (strcmp(argv[i], "--server") == 0 && i + 1 < argc)
             server_url = argv[++i];
