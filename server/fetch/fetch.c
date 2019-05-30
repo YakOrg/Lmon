@@ -72,6 +72,7 @@ char *fetch_data_from_agents(struct Agent *a) {
     strcpy(response, "[");
 
     if (a) {
+        int first = 1;
         for (agent *iter = a->first; iter; iter = iter->next) {
             char *agent_metrics = handle_url(iter->endpoint);
             if (agent_metrics) {
@@ -81,12 +82,15 @@ char *fetch_data_from_agents(struct Agent *a) {
                 log_debug("fetch metrics from %s (size: %d)", iter->endpoint, strlen(agent_metrics));
 
                 response = realloc(response, new_fetched_str_len * sizeof(char));
+
+                if (first) {
+                    first = 0;
+                } else if (strlen(agent_metrics) > 0) {
+                    strcat(response, ", ");
+                }
+
                 strcat(response, agent_metrics);
                 free(agent_metrics);
-
-                if (iter->next && strlen(agent_metrics) > 0)
-                    strcat(response, ", ");
-
             } else continue;
         }
     }
