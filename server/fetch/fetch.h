@@ -9,7 +9,7 @@
 #include <curl/curl.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <jansson.h>
 #include "../agent.h"
 
 char *fetch_data_from_agents(struct Agent *node);

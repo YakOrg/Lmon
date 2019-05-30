@@ -67,33 +67,17 @@ char *handle_url(char *url) {
     return data.data;
 }
 
-char *fetch_data_from_agents(struct Agent *a) {
-    char *response = malloc(sizeof(char) * 2);
-    strcpy(response, "[");
+char *fetch_data_from_agents(struct Agent *agents) {
+    json_t *array = json_array();
 
-    if (a) {
-        int first = 1;
-        for (agent *iter = a->first; iter; iter = iter->next) {
-            char *agent_metrics = handle_url(iter->endpoint);
-            if (agent_metrics) {
-                int new_fetched_str_len =
-                        strlen(response) + strlen(agent_metrics) + (iter->next ? 2 : 1) + 1;
-
-                log_debug("fetch metrics from %s (size: %d)", iter->endpoint, strlen(agent_metrics));
-
-                response = realloc(response, new_fetched_str_len * sizeof(char));
-
-                if (first) {
-                    first = 0;
-                } else if (strlen(agent_metrics) > 0) {
-                    strcat(response, ", ");
-                }
-
-                strcat(response, agent_metrics);
-                free(agent_metrics);
-            } else continue;
+    if (agents) {
+        for (agent *agent = agents->first; agent; agent = agent->next) {
+            char *agent_metrics = handle_url(agent->endpoint);
+            json_t *metrics_obj = json_loads(agent_metrics, (size_t) NULL, NULL);
+            free(agent_metrics);
+            json_array_append(array, metrics_obj);
         }
     }
-    strcat(response, "]");
-    return response;
+
+    return json_dumps(array, (size_t) NULL);
 }
