@@ -19,15 +19,16 @@
 # Some variables
 readonly URL="https://get.oceancraft.ru/lmon"
 readonly BIN_PATH="/usr/bin/lmon"
-readonly SERVICE_PATH="/etc/systemd/system/lmon.service"
+readonly SERVICE_PATH="/etc/systemd/system"
 
 download_bin() {
     curl ${URL} -o ${BIN_PATH}
+    chmod +x ${BIN_PATH}
 }
 
 install_service() {
     # Create systemd service
-    cat > ${SERVICE_PATH}-${1} << EOF
+    cat > ${SERVICE_PATH}/lmon-${MODE}.service << EOF
 [Unit]
 Description=LMon
 After=network.target
@@ -43,14 +44,17 @@ WantedBy=multi-user.target
 EOF
     # Enable and start service
     systemctl daemon-reload
-    systemctl enable lmon
-    systemctl start lmon
+    systemctl enable lmon-${MODE}
+    systemctl start lmon-${MODE}
 }
 
 remove_service() {
-    systemctl stop lmon
-    systemctl disable lmon
-    rm ${SERVICE_PATH}
+    systemctl stop lmon-agent
+    systemctl stop lmon-server
+    systemctl disable lmon-agent
+    systemctl disable lmon-server
+    rm ${SERVICE_PATH}/lmon-agent.service
+    rm ${SERVICE_PATH}/lmon-server.service
     systemctl daemon-reload
 }
 
@@ -73,16 +77,16 @@ remove() {
     remove_binary
 }
 
-if [[ $1 == "" ]]; then
+if [ "$1" = "" ]; then
     readonly MODE="agent"
-elif [[ $1 == "agent" ]]; then
+elif [ "$1" = "agent" ]; then
     readonly MODE=$1
-elif [[ $1 == "server" ]]; then
+elif [ "$1" = "server" ]; then
     readonly MODE=$1
-elif [[ $1 == "update" ]]; then
+elif [ "$1" = "update" ]; then
     update
     exit
-elif [[ $1 == "remove" ]]; then
+elif [ "$1" = "remove" ]; then
     remove
     exit
 else
