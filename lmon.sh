@@ -21,13 +21,13 @@ readonly URL="https://get.oceancraft.ru/lmon"
 readonly BIN_PATH="/usr/bin/lmon"
 readonly SERVICE_PATH="/etc/systemd/system/lmon.service"
 
-function download_bin() {
+download_bin() {
     curl ${URL} -o ${BIN_PATH}
 }
 
-function install_service() {
+install_service() {
     # Create systemd service
-    cat > ${SERVICE_PATH} << EOF
+    cat > ${SERVICE_PATH}-${1} << EOF
 [Unit]
 Description=LMon
 After=network.target
@@ -47,28 +47,28 @@ EOF
     systemctl start lmon
 }
 
-function remove_service() {
+remove_service() {
     systemctl stop lmon
     systemctl disable lmon
     rm ${SERVICE_PATH}
     systemctl daemon-reload
 }
 
-function remove_binary() {
+remove_binary() {
     rm ${BIN_PATH}
 }
 
-function install() {
+install() {
     download_bin
     install_service
 }
 
-function update() {
+update() {
     remove_binary
     download_bin
 }
 
-function remove() {
+remove() {
     remove_service
     remove_binary
 }
