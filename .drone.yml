@@ -35,7 +35,9 @@ steps:
         from_secret: id_rsa
       port: 22
       target: /files/
-      source: lmon
+      source:
+        - lmon
+        - lmon.sh
     when:
       branch:
         - master
