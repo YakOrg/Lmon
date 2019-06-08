@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <err.h>
 #include <pthread.h>
+#include <libbrd.h>
 
 #include "../../log/log.h"
 #include "../../agent/metrics/metrics.h"

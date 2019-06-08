@@ -4,13 +4,6 @@
 
 #include "agent.h"
 
-char *json_metrics() {
-    metrics *m = get_all_metrics();
-    json_t *json = make_json(m);
-    free(m);
-    return json_dumps(json, (size_t) JSON_REAL_PRECISION(3));
-}
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-parameter"
 static int handler(void *cls,
@@ -24,18 +17,16 @@ static int handler(void *cls,
 
     struct MHD_Response *response = NULL;
     int ret;
-
     if (0 != strcmp(method, "GET")) return MHD_NO;
-
     if (strcmp(url, "/") == 0) {
-        char *content = json_metrics();
-        response = MHD_create_response_from_buffer(strlen(content), (void *) content, MHD_RESPMEM_PERSISTENT);
-        MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "application/json; charset=utf-8");
-        ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+
+        metrics *m = get_all_metrics();
+        json_t *json = make_json(m);
+        free(m);
+
+        ret = send_json(connection, json_dumps(json, JSON_REAL_PRECISION(3)));
     } else {
-        response = MHD_create_response_from_buffer(strlen(NOT_FOUND), NOT_FOUND, MHD_RESPMEM_PERSISTENT);
-        MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "text/plain; charset=utf-8");
-        ret = MHD_queue_response(connection, MHD_HTTP_NOT_FOUND, response);
+        ret = not_found(connection);
     }
 
     MHD_destroy_response(response);
