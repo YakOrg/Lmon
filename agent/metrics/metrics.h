@@ -103,4 +103,6 @@ int get_base_metrics(metrics *m);
 
 int get_advanced_metrics(metrics *m);
 
+metrics *get_all_metrics();
+
 #endif //LMON_METRICS_H

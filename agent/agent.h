@@ -11,14 +11,13 @@
 #include <netdb.h>
 #include <curl/curl.h>
 #include <microhttpd.h>
+#include <libbrd.h>
 
 #include "../http/http.h"
 #include "metrics/metrics.h"
 #include "json/json.h"
 #include "../utils/utils.h"
 #include "../main.h"
-
-#define BRD_RECIVE_BUF_SIZE 256
 
 void start_agent(int http_port, char *server_url);
 

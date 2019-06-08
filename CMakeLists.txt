@@ -21,3 +21,6 @@ target_link_libraries(lmon ${JANSSON})
 
 find_library(libhttp microhttpd)
 target_link_libraries(lmon ${libhttp})
+
+find_library(libbrd libbrd.a)
+target_link_libraries(lmon ${libbrd})

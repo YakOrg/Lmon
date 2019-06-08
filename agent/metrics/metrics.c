@@ -4,6 +4,13 @@
 
 #include "metrics.h"
 
+metrics *get_all_metrics() {
+    metrics *m = malloc(sizeof(metrics));
+    get_base_metrics(m);
+    get_advanced_metrics(m);
+    return m;
+}
+
 /*
  * find structure by name in structures list
  * returns structure in success
