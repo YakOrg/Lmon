@@ -1,5 +1,4 @@
 # Lmon 
-[![Build Status](https://drone.oceancraft.ru/api/badges/Yak/lmon/status.svg)](https://drone.oceancraft.ru/Yak/lmon)
 
 Lightweight monitoring
 
