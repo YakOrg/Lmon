@@ -2,29 +2,38 @@
 
 Lightweight monitoring
 
-## Setup and usage
+## Build
 
-We wrote a systemd service setup script for x86_64 distros.
+Dependencies: libcurl, jansson, libhttpd and [libbrd](https://git.oceancraft.ru/yak/libbrd)
 
-#### 1) Install the agent on each node.
 ```
-curl -s 'https://get.oceancraft.ru/lmon.sh' | sh -s agent
-```
-
-#### 2) Install the server on some node.
-```
-curl -s 'https://get.oceancraft.ru/lmon.sh' | sh -s server
+cmake -S .
+make
 ```
 
-#### 3) Magic... Wait a few seconds for the server node to start the service discovery.
+## Usage
+
+### Cluster
+
+##### 1) Run agent on each node.
+```
+lmon agent
+```
+
+##### 2) Run the server on some node.
+```
+lmon server
+```
+
+##### 3) Wait a few seconds for the server node to start the service discovery.
 ```
 INFO  server.c:35: added agent ('http://IP:PORT')
 ```
-#### 4) Connect to the server node and get metrics from all nodes.
+##### 4) Connect to the server node and get metrics from all nodes.
 ```
 curl 'http://IP_OR_NAME:PORT'
 ```
-## Single node usage
+### Single node
 ```
 lmon agent
 ```
