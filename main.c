@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     char *enptr;
     int as_daemon = 0;
 
-    char *server_url = malloc(sizeof(char) * 60);
+    char server_url[60];
 
     log_set_level(LOG_INFO);
 
@@ -35,8 +35,8 @@ int main(int argc, char **argv) {
             log_set_level(LOG_DEBUG);
         if (strcmp(argv[i], "--trace") == 0)
             log_set_level(LOG_TRACE);
-        if (strcmp(argv[i], "--server") == 0 && i + 1 < argc)
-            server_url = argv[++i];
+        if (strcmp(argv[i], "--server") == 0 && i + 1 < argc && strlen(argv[i + 1]) < 60)
+            strcpy(server_url, argv[++i]);
     }
 
     if (strcmp(argv[1], "server") == 0) {

@@ -22,9 +22,10 @@ static int handler(void *cls,
 
         metrics *m = get_all_metrics();
         json_t *json = make_json(m);
-        free(m);
-
-        ret = send_json(connection, json_dumps(json, JSON_REAL_PRECISION(3)));
+        char *str = json_dumps(json, JSON_REAL_PRECISION(3));
+        json_decref(json);
+        free_metrics(m);
+        ret = send_json(connection, str);
     } else {
         ret = not_found(connection);
     }

@@ -1,13 +1,14 @@
 //
 // Created by dragon on 26.05.19.
 //
+#include <malloc.h>
 #include "http.h"
 
 int send_page(struct MHD_Connection *connection,
               char *text,
               char *content_type,
               unsigned int status_code) {
-    struct MHD_Response *response = MHD_create_response_from_buffer(strlen(text), text, MHD_RESPMEM_PERSISTENT);
+    struct MHD_Response *response = MHD_create_response_from_buffer(strlen(text), text, MHD_RESPMEM_MUST_FREE);
     MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, content_type);
     int ret = MHD_queue_response(connection, status_code, response);
     MHD_destroy_response(response);

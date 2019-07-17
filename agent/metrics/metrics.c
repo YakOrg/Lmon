@@ -4,6 +4,13 @@
 
 #include "metrics.h"
 
+char *clone_string(char *string) {
+    char *new_str = malloc((strlen(string) + 1) * sizeof(char));
+    new_str[strlen(string)] = '\0';
+    strcpy(new_str, string);
+    return new_str;
+}
+
 metrics *get_all_metrics() {
     metrics *m = malloc(sizeof(metrics));
     get_base_metrics(m);
@@ -109,30 +116,28 @@ network_interface* get_interfaces(void)
     /*iterator*/
     network_interface* it         = NULL;
 
-    if(getifaddrs(&ifaddr)) {
+    if (getifaddrs(&ifaddr)) {
         perror("getifaddrs");
         exit(EXIT_FAILURE);
     }
 
     /*run through the loop of network interfaces*/
-    for (ifa = ifaddr; ifa != NULL; ifa=ifa->ifa_next) {
-        if(it == NULL){
+    for (ifa = ifaddr; ifa; ifa = ifa->ifa_next) {
+        if (!it) {
             /*there are no interfaces in list*/
             /*create first element*/
-            interfaces = create_int_list(ifa->ifa_name);
+            interfaces = create_int_list(clone_string(ifa->ifa_name));
             /*assign him address*/
             add_new_addr(interfaces, ifa);
             it = interfaces;
-        }else{
+        } else {
             network_interface *t = find_struct_by_name(interfaces, ifa->ifa_name);
-            if(t != NULL){
-                add_new_addr(t, ifa);
-            }else{
-                add_new_addr(add_new_int(interfaces, ifa->ifa_name), ifa);
-            }
+            if (t) add_new_addr(t, ifa);
+            else add_new_addr(add_new_int(interfaces, clone_string(ifa->ifa_name)), ifa);
         }
-
     }
+
+    free(ifaddr);
 
     return interfaces;
 }
@@ -198,11 +203,13 @@ int get_base_metrics(metrics *m) {
     struct utsname *uts = malloc(sizeof(struct utsname));
     int res = uname(uts);
 
-    m->hostname = uts->nodename;
-    m->sys_name = uts->sysname;
-    m->sys_release = uts->release;
-    m->sys_version = uts->version;
-    m->arch = uts->machine;
+    m->hostname = clone_string(uts->nodename);
+    m->sys_name = clone_string(uts->sysname);
+    m->sys_release = clone_string(uts->release);
+    m->sys_version = clone_string(uts->version);
+    m->arch = clone_string(uts->machine);
+
+    free(uts);
 
     return res;
 }
@@ -228,5 +235,48 @@ int get_advanced_metrics(metrics *m) {
 
     m->drives = getDrives();
 
+    free(sys);
+
     return res;
+}
+
+void free_drives(drive *drives) {
+    for (drive *iter = drives; !iter->end; iter++) {
+        free(iter->blockPath);
+        free(iter->mountPoint);
+    }
+    free(drives);
+}
+
+void free_net_addrs(net_address *addresses) {
+    for (net_address *address = addresses; address;) {
+        if (address->type == IPV4 || address->type == IPV6) {
+            free(address->ip_address);
+            free(address->net_mask);
+        }
+        net_address *next = address->next;
+        free(address);
+        address = next;
+    }
+}
+
+void free_interfaces(network_interface *in) {
+    for (network_interface *iface = in; iface;) {
+        free(iface->interface_name);
+        free_net_addrs(iface->addresses);
+        network_interface *next = iface->next;
+        free(iface);
+        iface = next;
+    }
+}
+
+void free_metrics(metrics *m) {
+    free_interfaces(m->network_interfaces);
+    free_drives(m->drives);
+    free(m->hostname);
+    free(m->sys_name);
+    free(m->sys_version);
+    free(m->sys_release);
+    free(m->arch);
+    free(m);
 }

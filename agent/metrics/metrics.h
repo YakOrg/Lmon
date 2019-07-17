@@ -105,4 +105,10 @@ int get_advanced_metrics(metrics *m);
 
 metrics *get_all_metrics();
 
+void free_drives(drive *drives);
+
+void free_metrics(metrics *m);
+
+void free_interfaces(network_interface *in);
+
 #endif //LMON_METRICS_H
