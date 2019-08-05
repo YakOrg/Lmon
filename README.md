@@ -4,7 +4,7 @@ Lightweight monitoring
 
 ## Build
 
-Dependencies: libcurl, jansson, libhttpd and [libbrd](https://git.oceancraft.ru/yak/libbrd)
+Dependencies: libcurl, jansson, libhttpd, [libbrd](https://git.oceancraft.ru/yak/libbrd), [LibSysMetrics](https://git.oceancraft.ru/yak/sysmetricslib)
 
 ```
 cmake -S .
