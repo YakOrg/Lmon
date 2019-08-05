@@ -10,8 +10,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include <jansson.h>
+#include <sysmetrics.h>
 #include "../agent.h"
 
-char *fetch_data_from_agents(struct Agent *node);
+char *fetch_data_from_agents(struct Agent *node, int fetch_srv_data);
 
 #endif //LMON_FETCH_H

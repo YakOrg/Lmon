@@ -83,6 +83,11 @@ static void request_completed(void *cls, struct MHD_Connection *connection,
     *con_cls = NULL;
 }
 
+typedef struct http_srv_args {
+    void *agent;
+    int run_agent;
+} http_srv_args;
+
 #pragma clang diagnostic pop
 
 #pragma clang diagnostic push
@@ -98,13 +103,14 @@ static int handler(void *cls,
                    void **con_cls) {
 
     int status;
-    agent **agents_pointer_to_pointer = (agent **) cls;
+    http_srv_args *args = cls;
+    agent **agents_pointer_to_pointer = args->agent;
     agent *agents = *agents_pointer_to_pointer;
 
     if (!strcmp(method, "GET") && !strcmp(method, "POST"))
         return MHD_NO;
     else if (!strcmp(url, "/"))
-        status = send_json(connection, fetch_data_from_agents(agents));
+        status = send_json(connection, fetch_data_from_agents(agents, args->run_agent));
     else if (!strcmp(url, "/agents/add") && !strcmp(method, "POST")) {
         if (!*con_cls) {
             struct connection_info_struct *con_info;
@@ -147,24 +153,27 @@ static int handler(void *cls,
 
 #pragma clang diagnostic pop
 
-void run_httpd(int port, agent **agent) {
+void run_httpd(int port, agent **agent, int run_agent) {
+    http_srv_args *args = malloc(sizeof(http_srv_args));
+    args->agent = (void *) agent;
+    args->run_agent = run_agent;
     MHD_start_daemon(MHD_USE_SELECT_INTERNALLY,
                      port,
                      NULL,
                      NULL,
                      &handler,
-                     agent,
+                     args,
                      MHD_OPTION_NOTIFY_COMPLETED,
                      request_completed,
                      NULL,
                      MHD_OPTION_END);
 }
 
-void start_server(int http_port) {
+void start_server(int http_port, int run_agent) {
     agent **agent_p = malloc(sizeof(agent *));
     *agent_p = NULL;
 
-    run_httpd(http_port, agent_p);
+    run_httpd(http_port, agent_p, run_agent);
 
     char *data = itoa(http_port);
     for (;;) {

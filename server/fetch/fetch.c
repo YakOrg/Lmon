@@ -67,7 +67,7 @@ char *handle_url(char *url) {
     return data.data;
 }
 
-char *fetch_data_from_agents(struct Agent *agents) {
+char *fetch_data_from_agents(struct Agent *agents, int fetch_srv_data) {
     json_t *array = json_array();
 
     if (agents) {
@@ -77,6 +77,13 @@ char *fetch_data_from_agents(struct Agent *agents) {
             free(agent_metrics);
             json_array_append(array, metrics_obj);
         }
+    }
+
+    if (fetch_srv_data) {
+        metrics *m = get_all_metrics();
+        json_t *json = make_json(m);
+        free_metrics(m);
+        json_array_append(array, json);
     }
 
     return json_dumps(array, (size_t) NULL);

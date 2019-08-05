@@ -17,7 +17,7 @@
 #define MAXANSWERSIZE   512
 #define POST            1
 
-void start_server(int http_port);
+void start_server(int http_port, int run_agent);
 
 typedef struct connection_info_struct {
     int connectiontype;
