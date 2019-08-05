@@ -72,7 +72,7 @@ void send_post(char *server_url, char *endpoint) {
     curl_global_cleanup();
 }
 
-void callback(char *message, char *ip, void *ptr) {
+void callback(char *message, char *ip, listener *listen) {
     network_interface *network_interfaces = get_interfaces();
     int mk = 0;
     char *m_address = malloc(17 * sizeof(char));
@@ -86,7 +86,7 @@ void callback(char *message, char *ip, void *ptr) {
                 }
             }
     m_address[16] = '\0';
-    int endpoint_port = *((int *) ptr);
+    int endpoint_port = *((int *) listen->args);
     char *endpoint = malloc((9 + strlen(m_address) + int_len(endpoint_port)) * sizeof(char));
     sprintf(endpoint, "http://%s:%d", m_address, endpoint_port);
     char *server_url = malloc((36 + strlen(message)) * sizeof(char));
@@ -97,6 +97,5 @@ void callback(char *message, char *ip, void *ptr) {
 void start_agent(int http_port, char *server_url) {
     log_info("Starting agent with http server on 0.0.0.0:%d", http_port);
     start_metrics_server(http_port);
-    pthread_t pthread = *BRD_listen(1973, callback, &http_port);
-    pthread_join(pthread, NULL);
+    brd_listen_others(1973, callback, &http_port);
 }

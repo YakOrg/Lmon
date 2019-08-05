@@ -11,10 +11,11 @@
 #include <netdb.h>
 #include <curl/curl.h>
 #include <microhttpd.h>
+
+#include <sysmetrics.h>
 #include <libbrd.h>
 
 #include "../http/http.h"
-#include "metrics/metrics.h"
 #include "json/json.h"
 #include "../utils/utils.h"
 #include "../main.h"

@@ -5,9 +5,11 @@
 #ifndef LMON_SERVER_H
 #define LMON_SERVER_H
 
+#include <libbrd.h>
+
+#include "../log/log.h"
 #include "../http/http.h"
 #include "../utils/utils.h"
-#include "broadcast/brd.h"
 #include "fetch/fetch.h"
 #include "agent.h"
 

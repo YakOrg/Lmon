@@ -165,5 +165,10 @@ void start_server(int http_port) {
     *agent_p = NULL;
 
     run_httpd(http_port, agent_p);
-    run_blocking_broadcast(itoa(http_port));
+
+    char *data = itoa(http_port);
+    for (;;) {
+        brd_send_all(1973, data);
+        sleep(10);
+    }
 }
