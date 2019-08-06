@@ -1,0 +1,27 @@
+stages:
+  - build
+
+build:
+  stage: build
+  image: spritsail/alpine-cmake:3.8
+  before_script:
+    - apk add --no-cache gnutls-dev git upx libmicrohttpd-dev jansson-dev curl-dev
+    # SysMetricsLib
+    - git clone https://git.oceancraft.ru/yak/sysmetricslib.git
+    - cd sysmetricslib
+    - cmake -S .
+    - make install
+    - cd ..
+    # LibBrd
+    - git clone https://git.oceancraft.ru/yak/libbrd.git
+    - cd libbrd
+    - cmake -S .
+    - make install
+    - cd ..
+  script:
+    - cmake .
+    - make
+    - upx lmon
+  artifacts:
+    paths:
+      - lmon
