@@ -92,14 +92,14 @@ void callback(char *message, char *ip, listener *listen) {
 
 struct MHD_Daemon *mhd_daemon;
 
-void stop() {
+void full_stop() {
     MHD_stop_daemon(mhd_daemon);
 }
 
 void start_agent(int http_port) {
     log_info("Starting agent with http server on 0.0.0.0:%d", http_port);
     mhd_daemon = start_metrics_server(http_port);
-    atexit(stop);
-    signal(SIGTERM, stop);
+    atexit(full_stop);
+    signal(SIGTERM, full_stop);
     brd_listen_others(1973, callback, &http_port);
 }
