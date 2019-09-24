@@ -1,7 +1,3 @@
-/*
-* Created by slagger on 5/11/19.
-*/
-
 #include "json.h"
 
 json_t *net_interfaces_json(network_interface *network_interfaces) {
@@ -19,8 +15,13 @@ json_t *net_interfaces_json(network_interface *network_interfaces) {
             else if (address->type == IPV6)
                 json_array_append_new(ipv6_addresses, json_string(address->ip_address));
 
-        if (!json_array_size(ipv4_addresses) && !json_array_size(ipv6_addresses))
+        if (!json_array_size(ipv4_addresses) && !json_array_size(ipv6_addresses)) {
+            json_decref(ipv6_addresses);
+            json_decref(ipv4_addresses);
+            json_decref(addresses);
+            json_decref(interface);
             continue;
+        }
 
         json_object_set_new(addresses, "ipv4", ipv4_addresses);
         json_object_set_new(addresses, "ipv6", ipv6_addresses);

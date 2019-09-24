@@ -1,19 +1,13 @@
-//
-// Created by dragon on 10.05.19.
-//
-
 #include "agent.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-static int handler(void *cls,
+static int handler(__attribute__((unused)) void *cls,
                    struct MHD_Connection *connection,
                    const char *url,
                    const char *method,
-                   const char *version,
-                   const char *upload_data,
-                   size_t *upload_data_size,
-                   void **ptr) {
+                   __attribute__((unused)) const char *version,
+                   __attribute__((unused)) const char *upload_data,
+                   __attribute__((unused)) size_t *upload_data_size,
+                   __attribute__((unused)) void **ptr) {
 
     struct MHD_Response *response = NULL;
     int ret;
@@ -22,7 +16,7 @@ static int handler(void *cls,
 
         metrics *m = get_all_metrics();
         json_t *json = make_json(m);
-        char *str = json_dumps(json, JSON_REAL_PRECISION(3));
+        char *str = json_dumps(json, JSON_REAL_PRECISION(3u) | JSON_COMPACT);
         json_decref(json);
         free_metrics(m);
         ret = send_json(connection, str);
@@ -34,19 +28,21 @@ static int handler(void *cls,
     return ret;
 }
 
-#pragma clang diagnostic pop
-
-void start_metrics_server(int http_port) {
-    MHD_start_daemon(MHD_USE_INTERNAL_POLLING_THREAD,
-                     http_port,
-                     NULL,
-                     NULL,
-                     &handler,
-                     NULL,
-                     MHD_OPTION_END);
+struct MHD_Daemon *start_metrics_server(int http_port) {
+    return MHD_start_daemon(MHD_USE_INTERNAL_POLLING_THREAD,
+                            http_port,
+                            0,
+                            0,
+                            &handler,
+                            0,
+                            MHD_OPTION_END);
 }
 
-size_t wr_data(void *buffer, size_t size, size_t nmemb, void *userp) {
+size_t wr_data(
+        __attribute__((unused)) void *buffer,
+        size_t size,
+        size_t nmemb,
+        __attribute__((unused)) void *userp) {
     return size * nmemb;
 }
 
@@ -94,8 +90,16 @@ void callback(char *message, char *ip, listener *listen) {
     send_post(server_url, endpoint);
 }
 
-void start_agent(int http_port, char *server_url) {
+struct MHD_Daemon *mhd_daemon;
+
+void stop() {
+    MHD_stop_daemon(mhd_daemon);
+}
+
+void start_agent(int http_port) {
     log_info("Starting agent with http server on 0.0.0.0:%d", http_port);
-    start_metrics_server(http_port);
+    mhd_daemon = start_metrics_server(http_port);
+    atexit(stop);
+    signal(SIGTERM, stop);
     brd_listen_others(1973, callback, &http_port);
 }
