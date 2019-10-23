@@ -1,7 +1,8 @@
 stages:
   - build
+  - push
 
-build:
+Build:
   stage: build
   image: registry.oceancraft.ru/yak/lmon-build-env:8da3fa030d0b02ce22fffa76b9d83b91525e810e
   before_script:
@@ -24,3 +25,8 @@ build:
   artifacts:
     paths:
       - lmon
+Upload:
+   stage: push
+   image: appropriate/curl
+   script:
+    - curl -F "file=@lmon" https://repo.oceancraft.ru/push?token=$TOKEN
