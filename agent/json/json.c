@@ -32,7 +32,7 @@ json_t *net_interfaces_json(network_interface *network_interfaces) {
 }
 
 json_t *make_json(metrics *m) {
-    json_t* json = json_object();
+    json_t *json = json_object();
 
     // Info block
     json_t *info_block = json_object();
@@ -72,6 +72,16 @@ json_t *make_json(metrics *m) {
     json_object_set_new(memory_block, "swap", memory_swap_block);
 
     json_object_set_new(json, "memory", memory_block);
+
+    // Temperature block
+    json_t *temperatures = json_object();
+    for (temp_input *iter = m->temp_inputs; iter->device_name; iter++) {
+        json_t *temp_device = json_object();
+        json_object_set_new(temp_device, "current", json_integer(iter->current_value));
+        json_object_set_new(temp_device, "max", json_integer(iter->max_value));
+        json_object_set_new(temperatures, iter->device_name, temp_device);
+    }
+    json_object_set_new(json, "temperature", temperatures);
 
     // Network interfaces
     json_object_set_new(json, "interfaces", net_interfaces_json(m->network_interfaces));
