@@ -4,7 +4,7 @@ stages:
 
 Build:
   stage: build
-  image: registry.oceancraft.ru/yak/env/lmon:v.1.1
+  image: registry.oceancraft.ru/yak/env/lmon:v.1.2
   before_script:
     # SysMetricsLib
     - git clone https://git.oceancraft.ru/yak/sysmetricslib.git
