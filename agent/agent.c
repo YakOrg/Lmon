@@ -8,12 +8,11 @@ static int handler(__attribute__((unused)) void *cls,
                    __attribute__((unused)) const char *upload_data,
                    __attribute__((unused)) size_t *upload_data_size,
                    __attribute__((unused)) void **ptr) {
-
+    if (strcmp(method, "GET"))
+        return MHD_NO;
     struct MHD_Response *response = NULL;
     int ret;
-    if (0 != strcmp(method, "GET")) return MHD_NO;
-    if (strcmp(url, "/") == 0) {
-
+    if (!strcmp(url, "/")) {
         metrics *m = get_all_metrics();
         json_t *json = make_json(m);
         char *str = json_dumps(json, JSON_REAL_PRECISION(3u) | JSON_COMPACT);
@@ -23,16 +22,15 @@ static int handler(__attribute__((unused)) void *cls,
     } else {
         ret = not_found(connection);
     }
-
     MHD_destroy_response(response);
     return ret;
 }
 
 struct MHD_Daemon *start_metrics_server(int http_port) {
-    return MHD_start_daemon(MHD_USE_INTERNAL_POLLING_THREAD,
+    return MHD_start_daemon(MHD_USE_TCP_FASTOPEN | MHD_USE_EPOLL_INTERNAL_THREAD,
                             http_port,
-                            0,
-                            0,
+                            NULL,
+                            NULL,
                             &handler,
                             0,
                             MHD_OPTION_END);

@@ -1,6 +1,3 @@
-#ifndef UNTITLED2_MAIN_H
-#define UNTITLED2_MAIN_H
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,5 +22,4 @@
 "   --help             show this help\n"\
 "   --daemon           start agent as daemon\n"\
 "   --debug            enable debug log messages\n"\
-
-#endif
+"   --with-agent       collect metrics from server\n"

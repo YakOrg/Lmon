@@ -157,7 +157,7 @@ void run_httpd(int port, agent **agent, int run_agent) {
     http_srv_args *args = malloc(sizeof(http_srv_args));
     args->agent = (void *) agent;
     args->run_agent = run_agent;
-    MHD_start_daemon(MHD_USE_SELECT_INTERNALLY,
+    MHD_start_daemon(MHD_USE_TCP_FASTOPEN | MHD_USE_EPOLL_INTERNAL_THREAD,
                      port,
                      NULL,
                      NULL,

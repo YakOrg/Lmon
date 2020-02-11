@@ -86,5 +86,5 @@ char *fetch_data_from_agents(struct Agent *agents, int fetch_srv_data) {
         json_array_append(array, json);
     }
 
-    return json_dumps(array, (size_t) NULL);
+    return json_dumps(array, JSON_REAL_PRECISION(3u) | JSON_COMPACT);
 }
