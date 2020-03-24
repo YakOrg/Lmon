@@ -10,19 +10,17 @@ static int handler(__attribute__((unused)) void *cls,
                    __attribute__((unused)) void **ptr) {
     if (strcmp(method, "GET"))
         return MHD_NO;
-    struct MHD_Response *response = NULL;
     int ret;
     if (!strcmp(url, "/")) {
         metrics *m = get_all_metrics();
         json_t *json = make_json(m);
         char *str = json_dumps(json, JSON_REAL_PRECISION(3u) | JSON_COMPACT);
+        ret = send_json(connection, str);
         json_decref(json);
         free_metrics(m);
-        ret = send_json(connection, str);
     } else {
         ret = not_found(connection);
     }
-    MHD_destroy_response(response);
     return ret;
 }
 
