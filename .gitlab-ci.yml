@@ -29,6 +29,4 @@ Upload:
    stage: push
    image: appropriate/curl
    script:
-    - curl -F "file=@lmon" https://repo.oceancraft.ru/push?token=$TOKEN
-   only:
-    - tags
+    - curl -u $UPLOAD_TOKEN -F "file=@lmon" https://repo.oceancraft.ru/lmon/latest
