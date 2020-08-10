@@ -75,7 +75,7 @@ json_t *make_json(metrics *m) {
 
     // Temperature block
     json_t *temperatures = json_object();
-    for (temp_input *iter = m->temp_inputs; iter->device_name; iter++) {
+    for (temp_input *iter = m->temp_inputs; iter; iter = iter->next) {
         json_t *temp_device = json_object();
         json_object_set_new(temp_device, "current", json_integer(iter->current_value));
         json_object_set_new(temp_device, "max", json_integer(iter->max_value));
