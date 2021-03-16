@@ -10,13 +10,13 @@ add_executable(lmon main.c agent/json/json.c agent/json/json.h main.h http/http.
 find_package(Threads)
 target_link_libraries(lmon ${CMAKE_THREAD_LIBS_INIT})
 
-find_library(libcurl libcurl.a)
+find_library(libcurl libcurl.so)
 target_link_libraries(lmon ${libcurl})
 
-find_library(JANSSON libjansson.a)
+find_library(JANSSON libjansson.so)
 target_link_libraries(lmon ${JANSSON})
 
-find_library(libhttp libmicrohttpd.a)
+find_library(libhttp libmicrohttpd.so)
 target_link_libraries(lmon ${libhttp})
 
 find_library(libbrd libbrd.a)
