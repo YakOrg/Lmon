@@ -15,7 +15,7 @@ script:
   - ./configure
   - sudo make install
   - cd ..
-  - rm -rf libmicrohttpd-0.9.72
+  - sudo rm -rf libmicrohttpd-0.9.72
   # Jansson
   - wget https://github.com/akheron/jansson/archive/v2.13.1.tar.gz
   - tar xzfv v2.13.1.tar.gz
@@ -23,21 +23,21 @@ script:
   - cmake -S .
   - sudo make install
   - cd ..
-  - rm -rf jansson-2.13.1
+  - sudo rm -rf jansson-2.13.1
   # SysMetricsLib
   - git clone https://git.typex.one/yak/sysmetricslib.git
   - cd sysmetricslib
   - cmake -S .
   - sudo make install
   - cd ..
-  - rm -rf sysmetricslib
+  - sudo rm -rf sysmetricslib
   # LibBrd
   - git clone https://git.typex.one/yak/libbrd.git
   - cd libbrd
   - cmake -S .
   - sudo make install
   - cd ..
-  - rm -rf libbrd
+  - sudo rm -rf libbrd
   # Build
   - mkdir build
   - cd build
