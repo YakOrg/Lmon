@@ -10,13 +10,13 @@ script:
   - git clone https://git.typex.one/yak/sysmetricslib.git
   - cd sysmetricslib
   - cmake -S .
-  - make install
+  - sudo make install
   - cd ..
   # LibBrd
   - git clone https://git.typex.one/yak/libbrd.git
   - cd libbrd
   - cmake -S .
-  - make install
+  - sudo make install
   - cd ..
   # Build
   - mkdir build
