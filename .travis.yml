@@ -20,6 +20,7 @@ script:
   - cd jansson-2.13.1
   - cmake -S .
   - sudo make install
+  - cd ..
   - rm -rf jansson-2.13.1
   # SysMetricsLib
   - git clone https://git.typex.one/yak/sysmetricslib.git
