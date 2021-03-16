@@ -1,0 +1,40 @@
+sudo: false
+
+addons:
+  sonarcloud:
+    organization: "yakorg"
+    token:
+      secure: mJARzBb45mxsgAM2yC4dgrBaL7kdaGE9AXQnD6A45s9PHU/F/x4U75ClCYBhfhzitA1lgPhjgmdQH1NhAVW2oz5g5rmurvU61vunnzJ70y86qioZ8cGLDScHzf59ijfyxTA3dJl46REldDUFqIl1WjFewycV3Ki0XqgMbrsnihTGVJC28OdA+AILXIhFcCZzO26R53sND6d0pQVtrv4WlLz62YlXMuBrr1/xhXQX2qarvBXBVMt7TfwSARaT8pX4Hu2ATef+D+aMixiR3nI9XzcqOVZH+Yo2/3/O1XXctdHTQqD0hLlpKpHjTYEx34Kwzma3ssml8WPaSa44FbHlqMs5wiH/3BbYpCNOLf/9+p89eJEY/XQRbAx5CvX1A1qax7pqg9FJSMOpZncKUXxpjMUORD+/n9E3G4QywOGm0YOs1UOK0ZJXgw/S1FH9qHjXr5i96oBSvTcE+92DEUFenu0ZpPq19G4REVVSeZyDTPNKQKg2RpXnUtWLDEjIvJ1s7GJ/xyyzW52nnoTugqwdtQ9GTXB7eMC7DkAT4k/jfX9XKVKaWRaGNnlUuKzVAp9bwylJZS1ti9oNJh0muzLmgVLQ4TG+/Xfvy0EScvw1gCf0Sf9E6FUTrgNSXtBNfAefXbVxseM1a5K1ginFFemuSsIJRxKdCsKvUr8Bue4zjY0=
+script:
+  # SysMetricsLib
+  - git clone https://git.typex.one/yak/sysmetricslib.git
+  - cd sysmetricslib
+  - cmake -S .
+  - make install
+  - cd ..
+  # LibBrd
+  - git clone https://git.typex.one/yak/libbrd.git
+  - cd libbrd
+  - cmake -S .
+  - make install
+  - cd ..
+  # Build
+  - mkdir build
+  - cd build
+  - cmake ..
+  - cd ..
+  - NUMBER_OF_PROCESSORS=$(nproc --all)
+  # Wraps the compilation with the Build Wrapper to generate configuration (used
+  # later by the SonarQube Scanner) into the "bw-output" folder
+  - build-wrapper-linux-x86-64 --out-dir bw-output cmake --build build/
+  # And finally run the SonarQube analysis - read the "sonar-project.properties"
+  # file to see the specific configuration
+  - rm -rf build/CMakeFiles
+  - sonar-scanner -Dsonar.cfamily.cache.enabled=true -Dsonar.cfamily.cache.path=${TRAVIS_HOME}/.cfamily -Dsonar.cfamily.threads=${NUMBER_OF_PROCESSORS}
+
+cache:
+  directories:
+    - $HOME/.sonar/cache
+    # This contains the CFamily cache. According to https://docs.travis-ci.com/user/caching/#pull-request-builds-and-caches,
+    # for a PR, it will use the cache of the target branch if the branch of the PR does not already have its cache.
+    - $HOME/.cfamily
