@@ -6,18 +6,35 @@ addons:
     token:
       secure: mJARzBb45mxsgAM2yC4dgrBaL7kdaGE9AXQnD6A45s9PHU/F/x4U75ClCYBhfhzitA1lgPhjgmdQH1NhAVW2oz5g5rmurvU61vunnzJ70y86qioZ8cGLDScHzf59ijfyxTA3dJl46REldDUFqIl1WjFewycV3Ki0XqgMbrsnihTGVJC28OdA+AILXIhFcCZzO26R53sND6d0pQVtrv4WlLz62YlXMuBrr1/xhXQX2qarvBXBVMt7TfwSARaT8pX4Hu2ATef+D+aMixiR3nI9XzcqOVZH+Yo2/3/O1XXctdHTQqD0hLlpKpHjTYEx34Kwzma3ssml8WPaSa44FbHlqMs5wiH/3BbYpCNOLf/9+p89eJEY/XQRbAx5CvX1A1qax7pqg9FJSMOpZncKUXxpjMUORD+/n9E3G4QywOGm0YOs1UOK0ZJXgw/S1FH9qHjXr5i96oBSvTcE+92DEUFenu0ZpPq19G4REVVSeZyDTPNKQKg2RpXnUtWLDEjIvJ1s7GJ/xyyzW52nnoTugqwdtQ9GTXB7eMC7DkAT4k/jfX9XKVKaWRaGNnlUuKzVAp9bwylJZS1ti9oNJh0muzLmgVLQ4TG+/Xfvy0EScvw1gCf0Sf9E6FUTrgNSXtBNfAefXbVxseM1a5K1ginFFemuSsIJRxKdCsKvUr8Bue4zjY0=
 script:
+  # Libmicrohttpd
+  - wget https://mirror.tochlab.net/pub/gnu/libmicrohttpd/libmicrohttpd-0.9.72.tar.gz
+  - tar xzfv libmicrohttpd-0.9.72.tar.gz
+  - cd libmicrohttpd-0.9.72
+  - ./configure
+  - sudo make install
+  - cd ..
+  - rm -rf libmicrohttpd-0.9.72
+  # Jansson
+  - wget https://github.com/akheron/jansson/archive/v2.13.1.tar.gz
+  - tar xzfv v2.13.1.tar.gz
+  - cd jansson-2.13.1
+  - cmake -S .
+  - sudo make install
+  - rm -rf jansson-2.13.1
   # SysMetricsLib
   - git clone https://git.typex.one/yak/sysmetricslib.git
   - cd sysmetricslib
   - cmake -S .
   - sudo make install
   - cd ..
+  - rm -rf sysmetricslib
   # LibBrd
   - git clone https://git.typex.one/yak/libbrd.git
   - cd libbrd
   - cmake -S .
   - sudo make install
   - cd ..
+  - rm -rf libbrd
   # Build
   - mkdir build
   - cd build
