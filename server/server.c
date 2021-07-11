@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 //
 // Created by dragon on 10.05.19.
 //
@@ -14,13 +17,13 @@ int contains(agent *agents, char *endpoint) {
 
 char *add_agent(agent **agents_pointer_to_pointer, char *post_data) {
     agent *agents = *agents_pointer_to_pointer;
-    char *resp = malloc(MAXANSWERSIZE);
+    char *resp = malloc_wr(MAXANSWERSIZE);
     if (contains(agents, post_data)) {
         log_trace("agent present in list (%s)", post_data);
         sprintf(resp, "\"PRESENT\"");
     } else {
-        agent *agent = malloc(sizeof(struct Agent));
-        char *endpoint = malloc(sizeof(char) * 256);
+        agent *agent = malloc_wr(sizeof(struct Agent));
+        char *endpoint = malloc_wr(sizeof(char) * 256);
         sprintf(endpoint, "%s", post_data);
         agent->endpoint = endpoint;
         agent->next = NULL;
@@ -48,7 +51,7 @@ static int iterate_post(void *coninfo_cls, enum MHD_ValueKind kind, const char *
     if (0 == strcmp(key, "endpoint")) {
         if (size > 0) {
             char *answerstring;
-            answerstring = malloc(MAXANSWERSIZE);
+            answerstring = malloc_wr(MAXANSWERSIZE);
             if (!answerstring) return MHD_NO;
             snprintf(answerstring, MAXANSWERSIZE, "%s", data);
             con_info->answerstring = answerstring;
@@ -114,7 +117,7 @@ static int handler(void *cls,
     else if (!strcmp(url, "/agents/add") && !strcmp(method, "POST")) {
         if (!*con_cls) {
             struct connection_info_struct *con_info;
-            con_info = malloc(sizeof(struct connection_info_struct));
+            con_info = malloc_wr(sizeof(struct connection_info_struct));
             if (!con_info) return MHD_NO;
             con_info->answerstring = NULL;
             con_info->postprocessor =
@@ -154,7 +157,7 @@ static int handler(void *cls,
 #pragma clang diagnostic pop
 
 void run_httpd(int port, agent **agent, int run_agent) {
-    http_srv_args *args = malloc(sizeof(http_srv_args));
+    http_srv_args *args = malloc_wr(sizeof(http_srv_args));
     args->agent = (void *) agent;
     args->run_agent = run_agent;
     MHD_start_daemon(MHD_USE_TCP_FASTOPEN | MHD_USE_EPOLL_INTERNAL_THREAD,
@@ -170,7 +173,7 @@ void run_httpd(int port, agent **agent, int run_agent) {
 }
 
 void start_server(int http_port, int run_agent) {
-    agent **agent_p = malloc(sizeof(agent *));
+    agent **agent_p = malloc_wr(sizeof(agent *));
     *agent_p = NULL;
 
     run_httpd(http_port, agent_p, run_agent);

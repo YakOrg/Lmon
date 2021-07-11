@@ -16,6 +16,6 @@
 #include "../utils/utils.h"
 #include "../main.h"
 
-void start_agent(int http_port);
+void start_agent(int http_port, int no_listen, int code_enabled, char* code);
 
 #endif

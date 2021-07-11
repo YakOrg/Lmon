@@ -7,7 +7,7 @@
 
 #include <microhttpd.h>
 #include <string.h>
-#include <malloc.h>
+#include <utils.h>
 
 #define NOT_FOUND "404 page not found"
 #define BAD_REQUEST "Bad request"

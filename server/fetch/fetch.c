@@ -1,3 +1,6 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 //
 // Created by dragon on 24.05.19.
 //
@@ -40,7 +43,7 @@ char *handle_url(char *url) {
 
     struct url_data data;
     data.size = 0;
-    data.data = malloc(4096); /* reasonable size initial buffer */
+    data.data = malloc_wr(4096); /* reasonable size initial buffer */
     if (NULL == data.data) {
         fprintf(stderr, "Failed to allocate memory.\n");
         return NULL;

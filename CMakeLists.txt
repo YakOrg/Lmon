@@ -20,7 +20,7 @@ find_library(libhttp microhttpd)
 target_link_libraries(lmon ${libhttp})
 
 find_library(libbrd libbrd.a)
-target_link_libraries(lmon ${libbrd})
+target_link_libraries(lmon libbrd.a)
 
 find_library(libmetrics libsysmetrics.a)
 target_link_libraries(lmon ${libmetrics})
